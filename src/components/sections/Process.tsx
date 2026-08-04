@@ -1,8 +1,15 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
-import { Reveal } from '@/components/motion/Reveal';
+import { useLayoutEffect, useRef, useState } from 'react';
+import {
+  motion,
+  useInView,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from 'framer-motion';
 import { SplitText } from '@/components/motion/SplitText';
 import { Section } from '@/components/ui/Section';
 import { processSteps } from '@/lib/content';
@@ -121,6 +128,7 @@ function TimelineCard({
   return (
     <article
       className={cn(
+        // Desktop-only now — the vertical timeline below lg draws its own layout.
         'relative flex h-[clamp(20rem,44vh,26rem)] w-[min(78vw,25rem)] shrink-0 flex-col justify-between rounded-card border p-8 transition-all duration-700 ease-expo',
         active ? 'border-ink/15 bg-paper shadow-[0_30px_70px_-40px_rgba(0,0,0,0.35)]' : 'border-line bg-paper',
       )}
@@ -161,60 +169,122 @@ function TimelineCard({
       {index < processSteps.length - 1 && (
         <span
           aria-hidden
-          className="absolute -right-6 top-1/2 h-px w-6 bg-line"
+          className="absolute -right-6 top-1/2 hidden h-px w-6 bg-line lg:block"
         />
       )}
     </article>
   );
 }
 
-/** Mobile and reduced-motion: the same six phases, read top to bottom. */
+/**
+ * Mobile + tablet: an ordinary-scrolling vertical timeline. A spine draws itself
+ * down the left rail as the section passes, and each phase lights its node when
+ * it reaches reading position.
+ *
+ * Deliberately not pinned. Pinning a stack this tall means the visitor cannot
+ * reach a phase without scrubbing past the ones before it, and on a phone the
+ * cards never all fit in the frame at once.
+ */
 function VerticalTimeline() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [height, setHeight] = useState(0);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start 70%', 'end 60%'],
-  });
+  const listRef = useRef<HTMLOListElement>(null);
 
-  useEffect(() => {
-    if (ref.current) setHeight(ref.current.offsetHeight);
-  }, []);
+  // Spine tracks the list itself, filling as the first card reaches the middle
+  // of the screen and completing as the last one leaves it.
+  const { scrollYProgress } = useScroll({
+    target: listRef,
+    offset: ['start 70%', 'end 65%'],
+  });
+  const spine = useSpring(scrollYProgress, { stiffness: 220, damping: 40, mass: 0.4 });
 
   return (
-    <div className="shell mt-14">
-      <div ref={ref} className="relative pl-8 sm:pl-12">
-        <div aria-hidden className="absolute left-[3px] top-2 w-px bg-line" style={{ height: height - 16 }} />
-        <motion.div
+    <div className="shell mt-12 md:mt-16">
+      <ol ref={listRef} className="relative">
+        {/* Rail + the ink that fills it. Sits under the nodes. */}
+        <span
           aria-hidden
-          className="absolute left-[3px] top-2 w-px origin-top bg-ink"
-          style={{ height: height - 16, scaleY: scrollYProgress }}
+          className="absolute bottom-0 left-[9px] top-0 w-px bg-line md:left-[13px]"
+        />
+        <motion.span
+          aria-hidden
+          className="absolute bottom-0 left-[9px] top-0 w-px origin-top bg-ink md:left-[13px]"
+          style={{ scaleY: spine }}
         />
 
-        {processSteps.map((step) => (
-          <Reveal key={step.id} className="relative pb-12 last:pb-0">
-            <span aria-hidden className="absolute -left-8 top-2 h-[7px] w-[7px] rounded-full bg-ink sm:-left-12" />
-            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-              <h3 className="text-[1.5rem] font-medium tracking-[-0.03em]">
-                <span className="mr-3 font-mono text-label text-muted">{step.number}</span>
-                {step.title}
-              </h3>
-              <span className="font-mono text-label text-muted">{step.duration}</span>
-            </div>
-            <p className="mt-2.5 max-w-[46ch] text-[0.9375rem] leading-[1.6] text-muted">{step.body}</p>
-            <ul className="mt-4 flex flex-wrap gap-1.5">
-              {step.outputs.map((output) => (
-                <li
-                  key={output}
-                  className="rounded-pill border border-line px-3 py-1.5 font-mono text-[0.625rem] uppercase tracking-[0.11em] text-muted"
-                >
-                  {output}
-                </li>
-              ))}
-            </ul>
-          </Reveal>
+        {processSteps.map((step, index) => (
+          <VerticalStep key={step.id} step={step} last={index === processSteps.length - 1} />
         ))}
-      </div>
+      </ol>
     </div>
+  );
+}
+
+function VerticalStep({ step, last }: { step: (typeof processSteps)[number]; last: boolean }) {
+  const ref = useRef<HTMLLIElement>(null);
+  const reduced = useReducedMotion();
+  // Fires as the step rises into the lower third. A tighter band around the
+  // centre leaves the phases below it invisible, which reads as a blank column.
+  const inView = useInView(ref, { once: true, margin: '0px 0px -18% 0px' });
+
+  return (
+    <li ref={ref} className={cn('relative pl-9 md:pl-14', last ? 'pb-0' : 'pb-10 md:pb-14')}>
+      {/* Node */}
+      <span
+        aria-hidden
+        className={cn(
+          'absolute left-0 top-[3px] flex h-[19px] w-[19px] items-center justify-center rounded-full border bg-paper transition-colors duration-700 ease-expo md:h-[27px] md:w-[27px]',
+          inView ? 'border-ink' : 'border-line',
+        )}
+      >
+        <span
+          className={cn(
+            'h-[7px] w-[7px] rounded-full transition-all duration-700 ease-expo md:h-[9px] md:w-[9px]',
+            inView ? 'scale-100 bg-accent' : 'scale-0 bg-line',
+          )}
+        />
+      </span>
+
+      <motion.div
+        initial={reduced ? undefined : { opacity: 0, y: 20 }}
+        animate={reduced ? undefined : inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <span
+            className={cn(
+              'font-mono text-label transition-colors duration-700',
+              inView ? 'text-accent' : 'text-muted',
+            )}
+          >
+            {step.number}
+          </span>
+          <h3 className="text-[1.5rem] font-medium tracking-[-0.03em] md:text-[2rem]">
+            {step.title}
+          </h3>
+          <span className="font-mono text-label text-muted md:ml-auto">{step.duration}</span>
+        </div>
+
+        <p className="mt-3 max-w-[46ch] text-[0.9375rem] leading-[1.62] text-muted md:mt-4 md:max-w-[60ch] md:text-[1.0625rem]">
+          {step.body}
+        </p>
+
+        {/* Tablet gets the outputs two-up; the phone keeps them in one readable column. */}
+        <ul className="mt-5 grid grid-cols-1 gap-x-8 gap-y-2 border-t border-line pt-5 md:mt-7 md:grid-cols-2 md:pt-6">
+          {step.outputs.map((output) => (
+            <li
+              key={output}
+              className="flex items-center gap-3 text-[0.8125rem] text-muted md:text-[0.875rem]"
+            >
+              <span
+                className={cn(
+                  'h-1 w-1 shrink-0 rounded-full transition-colors duration-700',
+                  inView ? 'bg-accent' : 'bg-line',
+                )}
+              />
+              {output}
+            </li>
+          ))}
+        </ul>
+      </motion.div>
+    </li>
   );
 }

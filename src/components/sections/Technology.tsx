@@ -2,23 +2,33 @@
 
 import { useCallback, useRef } from 'react';
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion';
+import { RevealGroup, RevealItem } from '@/components/motion/Reveal';
 import { SplitText } from '@/components/motion/SplitText';
 import { Section } from '@/components/ui/Section';
 import { technologies } from '@/lib/content';
 import { cn } from '@/lib/utils';
 
-/** Hand-placed so the cluster reads as a composition, not a random scatter. */
+/**
+ * Hand-placed so the cluster reads as a composition, not a random scatter.
+ * Three loose bands, offset so no two tiles share a horizontal line. Keep x
+ * within 8–88: tiles are centred on their coordinate, so the widest label
+ * ("Framer Motion") would otherwise hang past the container edge.
+ */
 const LAYOUT = [
-  { x: 6, y: 14, depth: 0.9 },
-  { x: 27, y: 4, depth: 0.5 },
-  { x: 48, y: 17, depth: 1 },
-  { x: 71, y: 6, depth: 0.62 },
-  { x: 88, y: 22, depth: 0.85 },
-  { x: 3, y: 62, depth: 0.55 },
-  { x: 24, y: 76, depth: 0.95 },
-  { x: 47, y: 60, depth: 0.42 },
-  { x: 68, y: 78, depth: 0.88 },
-  { x: 86, y: 58, depth: 0.6 },
+  { x: 10, y: 11, depth: 0.9 },
+  { x: 34, y: 5, depth: 0.55 },
+  { x: 59, y: 14, depth: 1 },
+  { x: 84, y: 7, depth: 0.62 },
+  { x: 8, y: 45, depth: 0.5 },
+  { x: 31, y: 38, depth: 0.85 },
+  { x: 57, y: 47, depth: 0.45 },
+  { x: 85, y: 40, depth: 0.95 },
+  { x: 13, y: 79, depth: 0.7 },
+  { x: 38, y: 85, depth: 0.95 },
+  { x: 63, y: 77, depth: 0.5 },
+  // Widest label in the set — kept well inside the right edge so it still
+  // clears the container at the narrowest width the cluster is shown (md).
+  { x: 78, y: 84, depth: 0.8 },
 ];
 
 /**
@@ -102,6 +112,21 @@ function TechGlyph({ index }: { index: number }) {
           <path d="M4 19.5c5 2 11 2 16 0" />
         </svg>
       );
+    case 9: // stacked waves
+      return (
+        <svg {...common}>
+          <path d="M3 9c3-3.4 6-3.4 9 0s6 3.4 9 0" />
+          <path d="M3 15c3-3.4 6-3.4 9 0s6 3.4 9 0" />
+        </svg>
+      );
+    case 10: // easing curve
+      return (
+        <svg {...common}>
+          <path d="M3 19C9 19 12 5 21 5" />
+          <circle cx="3" cy="19" r="1.4" />
+          <circle cx="21" cy="5" r="1.4" />
+        </svg>
+      );
     default: // motion chevrons
       return (
         <svg {...common}>
@@ -170,17 +195,27 @@ export function Technology() {
           ))}
         </div>
 
-        <ul className="mt-12 flex flex-wrap gap-2 md:hidden">
+        {/* Phones get a real grid rather than a wrap of pills — twelve tags in a
+            ragged block reads as a dump; a ruled grid reads as a stack. */}
+        <RevealGroup className="mt-11 grid grid-cols-2 border-l border-t border-line md:hidden" stagger={0.04}>
           {technologies.map((tech, index) => (
-            <li
-              key={tech.name}
-              className="flex items-center gap-2.5 rounded-pill border border-line px-4 py-2.5"
-            >
-              <TechGlyph index={index} />
-              <span className="text-[0.875rem] font-medium tracking-[-0.01em]">{tech.name}</span>
-            </li>
+            <RevealItem key={tech.name} y={16} className="border-b border-r border-line">
+              <div className="flex h-full flex-col justify-between gap-4 p-4">
+                <span className="text-muted">
+                  <TechGlyph index={index} />
+                </span>
+                <span>
+                  <span className="block text-[0.9375rem] font-medium leading-tight tracking-[-0.012em]">
+                    {tech.name}
+                  </span>
+                  <span className="mt-1 block font-mono text-[0.5625rem] uppercase tracking-[0.14em] text-muted">
+                    {tech.category}
+                  </span>
+                </span>
+              </div>
+            </RevealItem>
           ))}
-        </ul>
+        </RevealGroup>
       </div>
     </Section>
   );

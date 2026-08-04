@@ -42,7 +42,7 @@ export function WhyVrazeal() {
           </div>
 
           {/* Feature rows. */}
-          <RevealGroup className="col-span-12 lg:col-span-7" stagger={0.06}>
+          <RevealGroup className="col-span-12 lg:col-span-7" stagger={0.04}>
             <div className="border-t border-line">
               {principles.map((principle, index) => (
                 <RevealItem key={principle.title} y={18}>

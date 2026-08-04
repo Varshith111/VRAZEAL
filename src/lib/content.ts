@@ -11,11 +11,17 @@ export type Stat = {
   note: string;
 };
 
+/**
+ * NOTE: these are placeholder figures. Replace every value with a real,
+ * defensible number before launch — a stat a prospect can disprove costs
+ * more trust than showing no stat at all.
+ */
 export const stats: Stat[] = [
   { value: 25, suffix: '+', label: 'Projects delivered', note: 'Shipped, not prototyped' },
   { value: 15, suffix: '+', label: 'Industries served', note: 'Health, finance, retail, logistics' },
   { value: 3, suffix: '+', label: 'Countries', note: 'Distributed by design' },
-  { value: 100, suffix: '%', label: 'Custom built', note: 'Zero templates, ever' },
+  { value: 20, suffix: '+', label: 'Technologies', note: 'Chosen for the next decade' },
+  { value: 6, suffix: '', label: 'Years building', note: 'Long enough to have opinions' },
 ];
 
 export type Capability = {
@@ -194,7 +200,10 @@ export type Project = {
   sector: string;
   year: string;
   title: string;
-  summary: string;
+  /** The three beats every case study is read in: what was broken, what we
+   *  built, and what changed as a result. Impact is `outcome`. */
+  problem: string;
+  solution: string;
   outcome: { value: string; label: string }[];
   stack: string[];
   visual: 'dashboard' | 'intelligence' | 'commerce' | 'identity';
@@ -211,8 +220,10 @@ export const projects: Project[] = [
     sector: 'Healthcare operations',
     year: '2025',
     title: 'A patient operations platform replacing eleven spreadsheets.',
-    summary:
-      'We rebuilt clinic scheduling, intake, and billing as a single system with role-based access for four staff types — cutting the time from referral to first appointment by more than half.',
+    problem:
+      'Scheduling, intake, and billing lived in eleven spreadsheets and a booking tool nobody trusted. Referrals sat for days because no single person could see the whole queue.',
+    solution:
+      'One system with role-based access for four staff types, a shared intake queue, and billing that reads from the same record the front desk edits — so the data can only be entered once.',
     outcome: [
       { value: '−58%', label: 'Referral to appointment' },
       { value: '11→1', label: 'Systems consolidated' },
@@ -226,8 +237,10 @@ export const projects: Project[] = [
     sector: 'Legal technology',
     year: '2025',
     title: 'Document intelligence that reads contracts in seconds.',
-    summary:
-      'A retrieval pipeline over 40,000 agreements with clause-level citations, confidence scoring, and a review queue that keeps a human on every judgement call.',
+    problem:
+      'Associates spent whole days reading 40,000 legacy agreements for a handful of clauses. Three agencies had quoted nine months and none could say how accuracy would be proven.',
+    solution:
+      'A retrieval pipeline with clause-level citations, confidence scoring, and a review queue that routes anything below threshold to a human — plus an evaluation harness that measures accuracy on every deploy.',
     outcome: [
       { value: '40k', label: 'Documents indexed' },
       { value: '9.4s', label: 'Median review time' },
@@ -241,8 +254,10 @@ export const projects: Project[] = [
     sector: 'B2B commerce',
     year: '2024',
     title: 'A trade storefront and CRM sharing one source of truth.',
-    summary:
-      'Customer-specific pricing, quote-to-order, and account management built on the same data model — so the sales team and the storefront never disagree again.',
+    problem:
+      'The storefront and the sales team ran on separate systems with separate price lists. Every trade order was re-keyed by hand, and the two quoted different numbers often enough that buyers stopped ordering online.',
+    solution:
+      'Customer-specific pricing, quote-to-order, and account management rebuilt on one data model, so a contract price changes in exactly one place and both sides read it instantly.',
     outcome: [
       { value: '3.2×', label: 'Online order volume' },
       { value: '0', label: 'Manual re-entry steps' },
@@ -256,8 +271,10 @@ export const projects: Project[] = [
     sector: 'Industrial manufacturing',
     year: '2024',
     title: 'A forty-year-old manufacturer, repositioned for its next decade.',
-    summary:
-      'Naming, identity, motion language, and a product site engineered to the same standard — one system covering everything from the spec sheet to the trade-show wall.',
+    problem:
+      'Forty years of drift had left six versions of the logo in circulation and a website that undersold the engineering behind the product. Buyers could not tell the company apart from its cheapest competitor.',
+    solution:
+      'Naming, identity, motion language, and a product site built as one system with the rules written down — covering everything from the spec sheet to the trade-show wall.',
     outcome: [
       { value: '+124%', label: 'Qualified enquiries' },
       { value: '98', label: 'Lighthouse performance' },
@@ -282,6 +299,8 @@ export const technologies: Technology[] = [
   { name: 'OpenAI', category: 'Intelligence' },
   { name: 'Docker', category: 'Infrastructure' },
   { name: 'AWS', category: 'Cloud' },
+  { name: 'Tailwind', category: 'Styling' },
+  { name: 'GSAP', category: 'Motion' },
   { name: 'Framer Motion', category: 'Motion' },
 ];
 

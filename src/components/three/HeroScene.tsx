@@ -66,17 +66,22 @@ function Sculpture({ pointer, scroll }: Driver) {
           samples={6}
           resolution={256}
           transmission={1}
-          thickness={1.15}
+          // Thinner glass with stronger dispersion: at 1.15 the facets fill in
+          // and the crystal reads as a flat grey solid against a white page.
+          thickness={0.85}
           roughness={0.02}
-          ior={1.62}
-          chromaticAberration={0.28}
-          anisotropy={0.18}
+          ior={1.58}
+          chromaticAberration={0.45}
+          anisotropy={0.3}
+          iridescence={0.7}
+          iridescenceIOR={1.28}
           distortion={0.14}
           distortionScale={0.28}
           temporalDistortion={0.06}
           clearcoat={1}
-          attenuationDistance={2.4}
-          attenuationColor="#eaf3ff"
+          clearcoatRoughness={0.04}
+          attenuationDistance={1.6}
+          attenuationColor="#dbeaff"
           color="#ffffff"
           background={new THREE.Color('#ffffff')}
         />
@@ -160,10 +165,13 @@ export default function HeroScene() {
 
         {/* Procedural studio: soft top key, two rim strips, one accent card. */}
         <Environment resolution={128}>
-          <Lightformer intensity={3.2} position={[0, 5, -2]} scale={[12, 6, 1]} form="rect" />
-          <Lightformer intensity={1.6} position={[-6, 1, 2]} rotation-y={Math.PI / 2} scale={[8, 4, 1]} />
-          <Lightformer intensity={1.2} position={[6, -1, 1]} rotation-y={-Math.PI / 2} scale={[8, 4, 1]} />
-          <Lightformer intensity={0.9} color="#0A84FF" position={[2, -4, 3]} scale={[6, 3, 1]} />
+          <Lightformer intensity={4} position={[0, 5, -2]} scale={[12, 6, 1]} form="rect" />
+          {/* Narrow, bright strips rather than broad fills — a wide soft box
+              lights every facet evenly, which is what flattens the crystal. */}
+          <Lightformer intensity={3} position={[-5, 1, 2]} rotation-y={Math.PI / 2} scale={[3, 6, 1]} />
+          <Lightformer intensity={2.2} position={[5, -1, 1]} rotation-y={-Math.PI / 2} scale={[3, 6, 1]} />
+          <Lightformer intensity={1.6} color="#0A84FF" position={[2, -4, 3]} scale={[6, 3, 1]} />
+          <Lightformer intensity={1.1} color="#9ec5ff" position={[-3, 3, -4]} scale={[5, 5, 1]} />
         </Environment>
       </Canvas>
     </div>

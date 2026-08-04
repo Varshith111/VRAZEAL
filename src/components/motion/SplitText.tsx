@@ -25,11 +25,10 @@ const container = (stagger: number, delay: number): Variants => ({
 });
 
 const piece: Variants = {
-  hidden: { y: '110%', opacity: 0 },
+  hidden: { y: '105%' },
   show: {
     y: '0%',
-    opacity: 1,
-    transition: { duration: 1, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
@@ -46,7 +45,7 @@ export function SplitText({
   className,
   granularity = 'char',
   delay = 0,
-  stagger = 0.022,
+  stagger = 0.016,
   once = true,
   active,
 }: Props) {
@@ -64,7 +63,7 @@ export function SplitText({
       aria-label={text}
       initial="hidden"
       {...(active === undefined
-        ? { whileInView: 'show', viewport: { once, margin: '-10% 0px -10% 0px' } }
+        ? { whileInView: 'show', viewport: { once, margin: '0px 0px 15% 0px' } }
         : { animate: active ? 'show' : 'hidden' })}
       variants={variants}
     >

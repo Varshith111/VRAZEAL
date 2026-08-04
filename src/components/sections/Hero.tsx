@@ -9,6 +9,53 @@ import { useIntroReady } from '@/lib/useIntroReady';
 
 const DISCIPLINES = ['Engineering', 'Design', 'AI', 'Brand', 'Creative'];
 
+/**
+ * Positioned around the sculpture rather than on top of it — the object floats
+ * near the centre, so the labels hug the corners of its bounding box.
+ */
+const HERO_LABELS = [
+  { text: 'Next.js', x: 12, y: 24, drift: -7 },
+  { text: 'TypeScript', x: 61, y: 10, drift: 6 },
+  { text: 'AI systems', x: 68, y: 64, drift: -6 },
+  { text: 'PostgreSQL', x: 9, y: 72, drift: 7 },
+] as const;
+
+function FloatingLabel({
+  text,
+  x,
+  y,
+  drift,
+  index,
+  ready,
+  reduced,
+}: {
+  text: string;
+  x: number;
+  y: number;
+  drift: number;
+  index: number;
+  ready: boolean;
+  reduced: boolean;
+}) {
+  return (
+    <motion.span
+      className="absolute whitespace-nowrap rounded-pill border border-line bg-paper/70 px-3.5 py-1.5 font-mono text-[0.5625rem] uppercase tracking-[0.14em] text-muted backdrop-blur-md"
+      style={{ left: `${x}%`, top: `${y}%` }}
+      initial={{ opacity: 0, scale: 0.92 }}
+      animate={ready ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.92 }}
+      transition={{ duration: 0.9, delay: 0.85 + index * 0.09, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <motion.span
+        className="block"
+        animate={reduced ? undefined : { y: [0, drift, 0] }}
+        transition={{ duration: 6 + index, repeat: Infinity, ease: 'easeInOut', delay: index * 0.4 }}
+      >
+        {text}
+      </motion.span>
+    </motion.span>
+  );
+}
+
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
   const ready = useIntroReady();
@@ -31,6 +78,18 @@ export function Hero() {
       id="top"
       className="noise relative flex min-h-[100svh] flex-col overflow-hidden pt-[var(--nav-h)]"
     >
+      {/* Engineering grid, faded out at the edges so it never boxes the type in. */}
+      <div
+        aria-hidden
+        className="grid-lines pointer-events-none absolute inset-0 -z-20 opacity-[0.55]"
+        style={{
+          WebkitMaskImage:
+            'radial-gradient(120% 90% at 60% 30%, #000 12%, rgba(0,0,0,0.35) 52%, transparent 78%)',
+          maskImage:
+            'radial-gradient(120% 90% at 60% 30%, #000 12%, rgba(0,0,0,0.35) 52%, transparent 78%)',
+        }}
+      />
+
       {/* Ambient wash that recedes as the page scrolls away. */}
       <motion.div
         aria-hidden
@@ -58,8 +117,11 @@ export function Hero() {
               <p className="eyebrow hidden sm:block">Creative &amp; Technology Agency</p>
             </motion.div>
 
-            {/* Broken by hand: each line is short enough never to re-wrap. */}
-            <h1 className="text-h1 font-medium">
+            {/* Broken by hand: each line is short enough never to re-wrap.
+                The size is tuned below the global h1 token on purpose — at
+                6.1vw the longest line runs under the sculpture on every desktop
+                width, and the ring cuts through "forward." */}
+            <h1 className="text-[clamp(2.5rem,5.4vw,4.75rem)] font-medium leading-[0.98] tracking-[-0.042em]">
               <span className="block">
                 <SplitText text="Building digital" active={ready} delay={0.15} />
               </span>
@@ -87,8 +149,16 @@ export function Hero() {
           </motion.div>
 
           {/* Visual sits in flow on small screens and overlaps the grid above lg. */}
-          <div className="col-span-12 h-[44vw] max-h-[380px] min-h-[240px] md:h-[46vh] lg:absolute lg:inset-y-0 lg:right-[-4%] lg:h-full lg:max-h-none lg:w-[52%] xl:right-0 xl:w-[48%]">
+          <div className="col-span-12 h-[44vw] max-h-[380px] min-h-[240px] md:h-[46vh] lg:absolute lg:inset-y-0 lg:right-[-2%] lg:h-full lg:max-h-none lg:w-[46%] xl:right-0 xl:w-[48%]">
             <HeroVisual />
+
+            {/* Technology labels orbiting the object. Desktop only: below lg the
+                visual is a fraction of the size and they would crowd it. */}
+            <div aria-hidden className="pointer-events-none absolute inset-0 hidden lg:block">
+              {HERO_LABELS.map((label, index) => (
+                <FloatingLabel key={label.text} {...label} index={index} ready={ready} reduced={Boolean(reduced)} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
