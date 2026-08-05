@@ -31,8 +31,15 @@ export type Capability = {
   summary: string;
   detail: string;
   deliverables: string[];
+  /** Typical engagement length, shown next to the live panel. */
+  timeline: string;
 };
 
+/**
+ * NOTE: `timeline` figures are indicative. The website and CRM ranges match
+ * what the FAQ commits to — confirm the other four against real engagements
+ * before launch so the two sections cannot contradict each other.
+ */
 export const capabilities: Capability[] = [
   {
     id: 'websites',
@@ -42,6 +49,7 @@ export const capabilities: Capability[] = [
     detail:
       'Fast, accessible, and built to convert. Every site ships with a real design system, a CMS your team can actually run, and Core Web Vitals in the green on launch day.',
     deliverables: ['Next.js', 'Headless CMS', 'Motion design', 'SEO foundations'],
+    timeline: '4–6 weeks',
   },
   {
     id: 'crm',
@@ -51,6 +59,7 @@ export const capabilities: Capability[] = [
     detail:
       'When off-the-shelf tools start dictating your process, we replace them. Pipelines, roles, permissions, and reporting modelled on how your team already works.',
     deliverables: ['Pipeline modelling', 'Role-based access', 'Reporting', 'Data migration'],
+    timeline: '10–16 weeks',
   },
   {
     id: 'software',
@@ -60,6 +69,7 @@ export const capabilities: Capability[] = [
     detail:
       'Operations software that removes the spreadsheet layer. Built on typed, tested foundations so it survives the third year, not just the first demo.',
     deliverables: ['Web applications', 'Client portals', 'Workflow automation', 'Integrations'],
+    timeline: '8–14 weeks',
   },
   {
     id: 'ai',
@@ -69,6 +79,7 @@ export const capabilities: Capability[] = [
     detail:
       'Retrieval systems, document intelligence, and agentic workflows wired into the tools you already use — with evaluation and guardrails, not vibes.',
     deliverables: ['RAG pipelines', 'Agent workflows', 'Model evaluation', 'Human-in-the-loop'],
+    timeline: '6–10 weeks',
   },
   {
     id: 'brand',
@@ -78,6 +89,7 @@ export const capabilities: Capability[] = [
     detail:
       'A brand is an operating system, not a logo file. We ship the naming, the type scale, the motion language, and the rules that keep it coherent at scale.',
     deliverables: ['Identity systems', 'Art direction', 'Design tokens', 'Brand guidelines'],
+    timeline: '4–8 weeks',
   },
   {
     id: 'creative',
@@ -87,6 +99,7 @@ export const capabilities: Capability[] = [
     detail:
       'Product films, launch campaigns, and social systems produced in-house — so the story on screen matches the quality of the product behind it.',
     deliverables: ['Video editing', 'Motion graphics', 'Campaign design', 'Content systems'],
+    timeline: '2–6 weeks',
   },
 ];
 
