@@ -128,90 +128,111 @@ export function ServicesPage() {
         subtitle="Every engagement draws from the full stack — software, AI, design, and marketing — so the work holds together as one system rather than a collection of deliverables."
       />
 
-      {/* Service list */}
-      <section className="bg-paper pb-section">
+      <section className="pb-section">
         <div className="shell">
           {serviceList.map((service, index) => (
-            <div key={service.id} id={service.id} className="scroll-mt-28">
-              <div className="h-px w-full bg-line" />
-              <div className="grid grid-cols-12 gap-y-10 py-14 lg:gap-x-16">
-                {/* Left */}
-                <div className="col-span-12 lg:col-span-4">
-                  <Reveal>
-                    <span className="font-mono text-label text-accent">{service.number}</span>
-                    <h2 className="mt-4 text-h3 font-medium tracking-[-0.03em]">{service.title}</h2>
-                    <p className="mt-4 text-[0.9375rem] leading-[1.65] text-muted max-w-[36ch]">
-                      {service.summary}
-                    </p>
-                    <div className="mt-8">
-                      <Button
-                        as={Link}
-                        href={service.cta?.href ?? '/contact'}
-                        variant="outline"
-                        size="sm"
-                        magnetic={false}
-                      >
-                        {service.cta?.label ?? 'Start a project'}
-                      </Button>
+            <div
+              key={service.id}
+              id={service.id}
+              className="scroll-mt-28"
+            >
+              <div className="h-px w-full bg-page-line" />
+              {/* Alternate bg: odd services on surface, even on paper */}
+              <div className={`-mx-gutter px-gutter py-14 ${index % 2 === 0 ? 'bg-surface' : 'bg-paper'}`}>
+                <div className="grid grid-cols-12 gap-y-10 lg:gap-x-16">
+                  {/* Left */}
+                  <div className="col-span-12 lg:col-span-4">
+                    <Reveal>
+                      <span className="font-mono text-label text-page-muted">
+                        {service.number}
+                      </span>
+                      <h2 className="mt-4 text-h3 font-medium tracking-[-0.03em] text-page-ink">
+                        {service.title}
+                      </h2>
+                      <p className="mt-4 text-[0.9375rem] leading-[1.65] text-page-muted max-w-[36ch]">
+                        {service.summary}
+                      </p>
+                      <div className="mt-8">
+                        <Button
+                          as={Link}
+                          href={service.cta?.href ?? '/contact'}
+                          variant="outline"
+                          size="sm"
+                          magnetic={false}
+                        >
+                          {service.cta?.label ?? 'Start a project'}
+                        </Button>
+                      </div>
+                    </Reveal>
+                  </div>
+
+                  {/* Right */}
+                  <div className="col-span-12 lg:col-span-7 lg:col-start-6">
+                    <Reveal delay={0.1}>
+                      <p className="text-[1.0625rem] leading-[1.7] text-page-muted max-w-[58ch]">
+                        {service.description}
+                      </p>
+                    </Reveal>
+
+                    <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2">
+                      <Reveal delay={0.15}>
+                        <div>
+                          <p className="font-mono text-label uppercase tracking-[0.16em] text-page-muted mb-5">
+                            Capabilities
+                          </p>
+                          <ul className="space-y-3">
+                            {service.capabilities.map((cap) => (
+                              <li
+                                key={cap}
+                                className="flex items-center gap-3 text-[0.9375rem] text-page-muted"
+                              >
+                                <span className="h-px w-3 shrink-0 bg-page-line" />
+                                {cap}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </Reveal>
+                      <Reveal delay={0.2}>
+                        <div>
+                          <p className="font-mono text-label uppercase tracking-[0.16em] text-page-muted mb-5">
+                            Business outcomes
+                          </p>
+                          <ul className="space-y-3">
+                            {service.outcomes.map((outcome) => (
+                              <li
+                                key={outcome}
+                                className="flex items-center gap-3 text-[0.9375rem] text-page-ink font-medium"
+                              >
+                                <span className="h-1 w-1 shrink-0 rounded-full bg-page-accent" />
+                                {outcome}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </Reveal>
                     </div>
-                  </Reveal>
-                </div>
-
-                {/* Right */}
-                <div className="col-span-12 lg:col-span-7 lg:col-start-6">
-                  <Reveal delay={0.1}>
-                    <p className="text-[1.0625rem] leading-[1.7] text-muted max-w-[58ch]">
-                      {service.description}
-                    </p>
-                  </Reveal>
-
-                  <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2">
-                    <Reveal delay={0.15}>
-                      <div>
-                        <p className="eyebrow mb-5">Capabilities</p>
-                        <ul className="space-y-3">
-                          {service.capabilities.map((cap) => (
-                            <li key={cap} className="flex items-center gap-3 text-[0.9375rem] text-muted">
-                              <span className="h-1 w-1 shrink-0 rounded-full bg-accent" />
-                              {cap}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </Reveal>
-                    <Reveal delay={0.2}>
-                      <div>
-                        <p className="eyebrow mb-5">Business outcomes</p>
-                        <ul className="space-y-3">
-                          {service.outcomes.map((outcome) => (
-                            <li key={outcome} className="flex items-center gap-3 text-[0.9375rem] text-muted">
-                              <span className="h-1 w-1 shrink-0 rounded-full bg-line" />
-                              {outcome}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </Reveal>
                   </div>
                 </div>
               </div>
             </div>
           ))}
+          <div className="h-px w-full bg-page-line" />
         </div>
       </section>
 
       {/* CTA */}
       <section className="py-section bg-ink text-paper">
         <div className="shell">
-          <div className="h-px w-full bg-paper/15" />
-          <div className="pt-14 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+          <div className="h-px w-full bg-paper/10" />
+          <div className="pt-14 flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
             <Reveal>
               <h2 className="text-h2 font-medium max-w-[18ch]">
                 Not sure which service fits?
               </h2>
-              <p className="mt-5 max-w-[44ch] text-lead text-paper/60">
-                Most projects draw from more than one discipline. Tell us about your business and we will
-                recommend the right approach.
+              <p className="mt-5 max-w-[44ch] text-lead text-paper/55">
+                Most projects draw from more than one discipline. Tell us about your business and we
+                will recommend the right approach.
               </p>
             </Reveal>
             <Reveal delay={0.1}>

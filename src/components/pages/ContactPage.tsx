@@ -26,7 +26,7 @@ const budgetOptions = [
   'Not sure yet',
 ];
 
-type FormState = 'idle' | 'submitting' | 'success' | 'error';
+type FormState = 'idle' | 'submitting' | 'success';
 
 export function ContactPage() {
   const reduced = useReducedMotion();
@@ -41,24 +41,24 @@ export function ContactPage() {
     details: '',
   });
 
-  const set = (field: keyof typeof form) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
+  const set =
+    (field: keyof typeof form) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+      setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setState('submitting');
-    // Simulate submission — replace with your form endpoint
     await new Promise((r) => setTimeout(r, 1200));
     setState('success');
   };
 
-  const inputClass = cn(
-    'w-full rounded-[10px] border border-line bg-paper px-4 py-3.5 text-[0.9375rem] text-ink placeholder:text-muted/50',
-    'transition-colors duration-300 focus:border-ink focus:outline-none',
+  const inputBase = cn(
+    'w-full bg-paper border border-page-line rounded-[10px] px-4 py-3.5',
+    'text-[0.9375rem] text-page-ink placeholder:text-page-muted/40',
+    'transition-colors duration-300',
+    'focus:border-page-ink focus:outline-none',
   );
-
-  const labelClass = 'block mb-2 text-[0.8125rem] font-medium tracking-[-0.01em]';
 
   return (
     <>
@@ -68,25 +68,30 @@ export function ContactPage() {
         subtitle="Tell us about your project and we will get back to you within one business day."
       />
 
-      <section className="bg-paper pb-section">
+      <section className="bg-surface pb-section">
         <div className="shell">
           <div className="grid grid-cols-12 gap-y-14 lg:gap-x-16">
 
-            {/* Left — info */}
+            {/* Left — contact info */}
             <div className="col-span-12 lg:col-span-4">
               <Reveal>
                 <div className="space-y-10">
                   <div>
-                    <p className="eyebrow mb-4">Get in touch</p>
+                    <p className="font-mono text-label uppercase tracking-[0.16em] text-page-muted mb-4">
+                      Get in touch
+                    </p>
                     <a
                       href={`mailto:${site.email}`}
-                      className="text-[1.0625rem] text-muted hover:text-ink transition-colors duration-300"
+                      className="text-[1.0625rem] text-page-muted hover:text-page-ink transition-colors duration-300"
                     >
                       {site.email}
                     </a>
                   </div>
+
                   <div>
-                    <p className="eyebrow mb-4">Follow us</p>
+                    <p className="font-mono text-label uppercase tracking-[0.16em] text-page-muted mb-4">
+                      Follow us
+                    </p>
                     <div className="flex flex-col gap-3">
                       {site.social.map((item) => (
                         <a
@@ -94,16 +99,17 @@ export function ContactPage() {
                           href={item.href}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-[0.9375rem] text-muted hover:text-ink transition-colors duration-300"
+                          className="text-[0.9375rem] text-page-muted hover:text-page-ink transition-colors duration-300"
                         >
                           {item.label}
                         </a>
                       ))}
                     </div>
                   </div>
-                  <div className="rounded-card border border-line p-6">
-                    <p className="text-[0.875rem] font-medium mb-2">Response time</p>
-                    <p className="text-[0.875rem] text-muted leading-[1.6]">
+
+                  <div className="bg-paper rounded-card border border-page-line p-6">
+                    <p className="text-[0.875rem] font-medium text-page-ink mb-2">Response time</p>
+                    <p className="text-[0.875rem] text-page-muted leading-[1.65]">
                       We respond to all enquiries within one business day. For urgent projects,
                       mention it in your message.
                     </p>
@@ -119,21 +125,30 @@ export function ContactPage() {
                   initial={reduced ? undefined : { opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                  className="flex flex-col gap-4 rounded-card border border-line p-10"
+                  className="bg-paper rounded-card border border-page-line p-10 flex flex-col gap-5"
                 >
-                  <span className="font-mono text-label text-accent">Message received</span>
-                  <h3 className="text-h3 font-medium">We will be in touch shortly.</h3>
-                  <p className="text-[0.9375rem] text-muted leading-[1.65] max-w-[44ch]">
+                  <span className="font-mono text-label uppercase tracking-[0.16em] text-page-accent">
+                    Message received
+                  </span>
+                  <h3 className="text-h3 font-medium text-page-ink">
+                    We will be in touch shortly.
+                  </h3>
+                  <p className="text-[0.9375rem] text-page-muted leading-[1.65] max-w-[44ch]">
                     Thank you for reaching out. We review every enquiry carefully and will respond
                     within one business day.
                   </p>
                 </motion.div>
               ) : (
                 <Reveal>
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                       <div>
-                        <label htmlFor="name" className={labelClass}>Name *</label>
+                        <label
+                          htmlFor="name"
+                          className="block mb-2 text-[0.8125rem] font-medium text-page-ink"
+                        >
+                          Name *
+                        </label>
                         <input
                           id="name"
                           type="text"
@@ -141,11 +156,16 @@ export function ContactPage() {
                           placeholder="Your full name"
                           value={form.name}
                           onChange={set('name')}
-                          className={inputClass}
+                          className={inputBase}
                         />
                       </div>
                       <div>
-                        <label htmlFor="email" className={labelClass}>Email *</label>
+                        <label
+                          htmlFor="email"
+                          className="block mb-2 text-[0.8125rem] font-medium text-page-ink"
+                        >
+                          Email *
+                        </label>
                         <input
                           id="email"
                           type="email"
@@ -153,70 +173,103 @@ export function ContactPage() {
                           placeholder="you@company.com"
                           value={form.email}
                           onChange={set('email')}
-                          className={inputClass}
+                          className={inputBase}
                         />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                       <div>
-                        <label htmlFor="phone" className={labelClass}>Phone</label>
+                        <label
+                          htmlFor="phone"
+                          className="block mb-2 text-[0.8125rem] font-medium text-page-ink"
+                        >
+                          Phone
+                        </label>
                         <input
                           id="phone"
                           type="tel"
                           placeholder="+44 7700 000000"
                           value={form.phone}
                           onChange={set('phone')}
-                          className={inputClass}
+                          className={inputBase}
                         />
                       </div>
                       <div>
-                        <label htmlFor="company" className={labelClass}>Company</label>
+                        <label
+                          htmlFor="company"
+                          className="block mb-2 text-[0.8125rem] font-medium text-page-ink"
+                        >
+                          Company
+                        </label>
                         <input
                           id="company"
                           type="text"
                           placeholder="Company name"
                           value={form.company}
                           onChange={set('company')}
-                          className={inputClass}
+                          className={inputBase}
                         />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                       <div>
-                        <label htmlFor="service" className={labelClass}>Service required *</label>
+                        <label
+                          htmlFor="service"
+                          className="block mb-2 text-[0.8125rem] font-medium text-page-ink"
+                        >
+                          Service required *
+                        </label>
                         <select
                           id="service"
                           required
                           value={form.service}
                           onChange={set('service')}
-                          className={cn(inputClass, 'cursor-pointer')}
+                          className={cn(inputBase, 'cursor-pointer')}
                         >
-                          <option value="" disabled>Select a service</option>
+                          <option value="" disabled>
+                            Select a service
+                          </option>
                           {serviceOptions.map((s) => (
-                            <option key={s} value={s}>{s}</option>
+                            <option key={s} value={s}>
+                              {s}
+                            </option>
                           ))}
                         </select>
                       </div>
                       <div>
-                        <label htmlFor="budget" className={labelClass}>Budget range</label>
+                        <label
+                          htmlFor="budget"
+                          className="block mb-2 text-[0.8125rem] font-medium text-page-ink"
+                        >
+                          Budget range
+                        </label>
                         <select
                           id="budget"
                           value={form.budget}
                           onChange={set('budget')}
-                          className={cn(inputClass, 'cursor-pointer')}
+                          className={cn(inputBase, 'cursor-pointer')}
                         >
-                          <option value="" disabled>Select a range</option>
+                          <option value="" disabled>
+                            Select a range
+                          </option>
                           {budgetOptions.map((b) => (
-                            <option key={b} value={b}>{b}</option>
+                            <option key={b} value={b}>
+                              {b}
+                            </option>
                           ))}
                         </select>
                       </div>
                     </div>
 
                     <div>
-                      <label htmlFor="details" className={labelClass}>Project details *</label>
+                      <label
+                        htmlFor="details"
+                        className="block mb-2 text-[0.8125rem] font-medium text-page-ink"
+                      >
+                        Project details *
+                      </label>
                       <textarea
                         id="details"
                         required
@@ -224,7 +277,7 @@ export function ContactPage() {
                         placeholder="Tell us about your project, what you are trying to achieve, and any relevant context."
                         value={form.details}
                         onChange={set('details')}
-                        className={cn(inputClass, 'resize-none')}
+                        className={cn(inputBase, 'resize-none')}
                       />
                     </div>
 

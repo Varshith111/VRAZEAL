@@ -92,39 +92,59 @@ export function AiSolutionsPage() {
         subtitle="We help businesses replace manual, time-consuming workflows with AI-powered systems that run reliably — without adding headcount."
       />
 
-      {/* Solutions */}
-      <section className="bg-paper pb-section">
+      {/* Solutions list */}
+      <section className="bg-surface pb-section">
         <div className="shell">
-          {solutions.map((solution) => (
+          {solutions.map((solution, index) => (
             <div key={solution.id} id={solution.id} className="scroll-mt-28">
-              <div className="h-px w-full bg-line" />
+              <div className="h-px w-full bg-page-line" />
               <div className="grid grid-cols-12 gap-y-8 py-12 lg:gap-x-16">
+                {/* Title col */}
                 <div className="col-span-12 lg:col-span-3">
                   <Reveal>
-                    <span className="font-mono text-label text-accent">{solution.number}</span>
-                    <h2 className="mt-3 text-[1.25rem] font-medium tracking-[-0.025em]">
+                    <span className="font-mono text-label text-page-muted">{solution.number}</span>
+                    <h2 className="mt-3 text-[1.25rem] font-medium tracking-[-0.025em] text-page-ink">
                       {solution.title}
                     </h2>
                   </Reveal>
                 </div>
+
+                {/* Three-column cards */}
                 <div className="col-span-12 lg:col-span-8 lg:col-start-5">
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    {/* Problem */}
                     <Reveal delay={0.05}>
-                      <div className="rounded-card border border-line p-6">
-                        <p className="eyebrow mb-3 text-muted">Problem</p>
-                        <p className="text-[0.9375rem] leading-[1.65] text-muted">{solution.problem}</p>
+                      <div className="bg-paper rounded-card border border-page-line p-6 h-full">
+                        <p className="font-mono text-label uppercase tracking-[0.16em] text-page-muted mb-4">
+                          Problem
+                        </p>
+                        <p className="text-[0.9375rem] leading-[1.65] text-page-muted">
+                          {solution.problem}
+                        </p>
                       </div>
                     </Reveal>
+
+                    {/* Solution */}
                     <Reveal delay={0.1}>
-                      <div className="rounded-card border border-line p-6">
-                        <p className="eyebrow mb-3 text-muted">AI Solution</p>
-                        <p className="text-[0.9375rem] leading-[1.65] text-muted">{solution.solution}</p>
+                      <div className="bg-paper rounded-card border border-page-line p-6 h-full">
+                        <p className="font-mono text-label uppercase tracking-[0.16em] text-page-muted mb-4">
+                          AI Solution
+                        </p>
+                        <p className="text-[0.9375rem] leading-[1.65] text-page-muted">
+                          {solution.solution}
+                        </p>
                       </div>
                     </Reveal>
+
+                    {/* Benefit — only card with accent treatment */}
                     <Reveal delay={0.15}>
-                      <div className="rounded-card border border-accent/20 bg-accent/[0.03] p-6">
-                        <p className="eyebrow mb-3 text-accent">Business Benefit</p>
-                        <p className="text-[0.9375rem] leading-[1.65] text-muted">{solution.benefit}</p>
+                      <div className="bg-paper rounded-card border border-page-line p-6 h-full">
+                        <p className="font-mono text-label uppercase tracking-[0.16em] text-page-accent mb-4">
+                          Outcome
+                        </p>
+                        <p className="text-[0.9375rem] leading-[1.65] text-page-ink font-medium">
+                          {solution.benefit}
+                        </p>
                       </div>
                     </Reveal>
                   </div>
@@ -132,29 +152,34 @@ export function AiSolutionsPage() {
               </div>
             </div>
           ))}
+          <div className="h-px w-full bg-page-line" />
         </div>
       </section>
 
       {/* Find what you can automate */}
       <section className="py-section bg-ink text-paper">
         <div className="shell">
-          <div className="h-px w-full bg-paper/15" />
+          <div className="h-px w-full bg-paper/10" />
           <div className="pt-14">
             <Reveal>
               <h2 className="text-h2 font-medium max-w-[20ch]">
                 Find what you can automate.
               </h2>
-              <p className="mt-5 max-w-[52ch] text-lead text-paper/60">
+              <p className="mt-5 max-w-[52ch] text-lead text-paper/55">
                 Most businesses have more automatable work than they realise. Here are the areas we
                 most commonly address.
               </p>
             </Reveal>
-            <RevealGroup className="mt-12 grid grid-cols-1 gap-px bg-paper/10 sm:grid-cols-2 lg:grid-cols-4 rounded-card overflow-hidden" stagger={0.04}>
+
+            <RevealGroup
+              className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-paper/10"
+              stagger={0.04}
+            >
               {automatable.map((item) => (
                 <RevealItem key={item.area}>
-                  <div className="bg-ink p-7 h-full">
-                    <p className="text-[1rem] font-medium">{item.area}</p>
-                    <p className="mt-2 text-[0.875rem] text-paper/50">{item.example}</p>
+                  <div className="border-b border-r border-paper/10 p-7">
+                    <p className="text-[1rem] font-medium text-paper">{item.area}</p>
+                    <p className="mt-2 text-[0.875rem] text-paper/45 leading-[1.6]">{item.example}</p>
                   </div>
                 </RevealItem>
               ))}
@@ -164,15 +189,15 @@ export function AiSolutionsPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-section bg-paper">
+      <section className="py-section bg-surface">
         <div className="shell">
-          <div className="h-px w-full bg-line" />
-          <div className="pt-14 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+          <div className="h-px w-full bg-page-line" />
+          <div className="pt-14 flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
             <Reveal>
-              <h2 className="text-h2 font-medium max-w-[18ch]">
+              <h2 className="text-h2 font-medium text-page-ink max-w-[18ch]">
                 Ready to automate your business?
               </h2>
-              <p className="mt-5 max-w-[44ch] text-lead text-muted">
+              <p className="mt-5 max-w-[44ch] text-lead text-page-muted">
                 Tell us which workflows are slowing your team down and we will show you what is
                 possible.
               </p>

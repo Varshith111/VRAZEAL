@@ -7,12 +7,21 @@ const config: Config = {
       colors: {
         ink: '#000000',
         paper: '#FFFFFF',
+        surface: '#FAFAFA',
         muted: '#666666',
         line: '#E8E8E8',
         accent: {
           DEFAULT: '#0A84FF',
           soft: 'rgba(10,132,255,0.08)',
           ring: 'rgba(10,132,255,0.24)',
+        },
+        // Refined tokens used on inner pages only — home page uses the above.
+        page: {
+          ink: '#080808',
+          muted: '#6B6B6B',
+          line: '#EAEAEA',
+          accent: '#2563EB',
+          'accent-soft': 'rgba(37,99,235,0.06)',
         },
       },
       fontFamily: {
