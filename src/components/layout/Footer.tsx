@@ -1,9 +1,9 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
-import { capabilities } from '@/lib/content';
-import { nav, site } from '@/lib/site';
+import { nav, services, site } from '@/lib/site';
 
 const legal = [
   { label: 'Privacy', href: '/privacy' },
@@ -19,7 +19,6 @@ export function Footer() {
       <div className="shell">
         <div className="h-px w-full bg-paper/15" />
 
-        {/* gap-x is held back until sm: on a 12-track grid it would exceed a phone's width. */}
         <div className="grid grid-cols-12 gap-y-12 pt-14 sm:gap-x-8">
           <div className="col-span-12 lg:col-span-4">
             <Image
@@ -35,33 +34,33 @@ export function Footer() {
             </p>
           </div>
 
-          <nav className="col-span-6 sm:col-span-4 lg:col-span-2 lg:col-start-7" aria-label="Footer">
+          <nav className="col-span-6 sm:col-span-4 lg:col-span-2 lg:col-start-7" aria-label="Footer navigation">
             <p className="eyebrow text-paper/40">Navigate</p>
             <ul className="mt-5 space-y-3">
               {nav.map((item) => (
                 <li key={item.href}>
-                  <a
+                  <Link
                     href={item.href}
                     className="link-underline text-[0.9375rem] text-paper/70 transition-colors duration-300 hover:text-paper"
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
           </nav>
 
           <div className="col-span-6 sm:col-span-4 lg:col-span-2">
-            <p className="eyebrow text-paper/40">Build</p>
+            <p className="eyebrow text-paper/40">Services</p>
             <ul className="mt-5 space-y-3">
-              {capabilities.map((capability) => (
-                <li key={capability.id}>
-                  <a
-                    href="#build"
+              {services.map((service) => (
+                <li key={service.href}>
+                  <Link
+                    href={service.href}
                     className="link-underline text-[0.9375rem] text-paper/70 transition-colors duration-300 hover:text-paper"
                   >
-                    {capability.title}
-                  </a>
+                    {service.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -94,7 +93,6 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Oversized wordmark, revealed on entry. */}
         <div className="mask-fade-x mt-20 overflow-hidden">
           <motion.div
             initial={reduced ? undefined : { y: '22%', opacity: 0 }}
@@ -119,13 +117,13 @@ export function Footer() {
           </p>
           <div className="flex flex-wrap items-center gap-x-7 gap-y-2">
             {legal.map((item) => (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
                 className="eyebrow text-paper/40 transition-colors duration-300 hover:text-paper"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
             <a href="#top" className="eyebrow text-paper/40 transition-colors duration-300 hover:text-paper">
               Back to top ↑

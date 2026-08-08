@@ -1,6 +1,8 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
@@ -12,19 +14,17 @@ export function Navbar() {
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
     setScrolled(latest > 24);
-    // Only hide well past the hero, and never while the menu is open.
     setHidden(!open && latest > previous && latest > 420);
   });
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
+    return () => { document.body.style.overflow = ''; };
   }, [open]);
 
   useEffect(() => {
@@ -32,6 +32,12 @@ export function Navbar() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => { setOpen(false); }, [pathname]);
+
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname.startsWith(href);
 
   return (
     <>
@@ -47,7 +53,7 @@ export function Navbar() {
           )}
         >
           <nav className="shell flex h-[var(--nav-h)] items-center justify-between gap-6" aria-label="Primary">
-            <a href="#top" className="relative z-10 -mx-2 shrink-0 px-2 py-2" aria-label={`${site.name} — home`}>
+            <Link href="/" className="relative z-10 -mx-2 shrink-0 px-2 py-2" aria-label={`${site.name} — home`}>
               <Image
                 src="/logo-wordmark.png"
                 alt={site.name}
@@ -59,28 +65,31 @@ export function Navbar() {
                   open && 'invert',
                 )}
               />
-            </a>
+            </Link>
 
             <ul className="hidden items-center gap-9 lg:flex">
               {nav.map((item) => (
                 <li key={item.href}>
-                  <a
+                  <Link
                     href={item.href}
-                    className="link-underline text-[0.875rem] text-muted transition-colors duration-300 hover:text-ink"
+                    className={cn(
+                      'link-underline text-[0.875rem] transition-colors duration-300 hover:text-ink',
+                      isActive(item.href) ? 'text-ink' : 'text-muted',
+                    )}
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
 
             <div className="flex items-center gap-2">
-              <Button as="a" href="#contact" size="sm" className="hidden sm:inline-flex" icon={null}>
+              <Button as={Link} href="/contact" size="sm" className="hidden sm:inline-flex" icon={null}>
                 Start a project
               </Button>
               <button
                 type="button"
-                onClick={() => setOpen((value) => !value)}
+                onClick={() => setOpen((v) => !v)}
                 aria-expanded={open}
                 aria-label={open ? 'Close menu' : 'Open menu'}
                 className={cn(
@@ -124,17 +133,22 @@ export function Navbar() {
             <ul className="flex flex-col gap-1">
               {nav.map((item, index) => (
                 <li key={item.href} className="overflow-hidden">
-                  <motion.a
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    className="block py-2 font-display text-[clamp(2rem,9vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.035em]"
+                  <motion.div
                     initial={{ y: '110%' }}
                     animate={{ y: '0%' }}
                     exit={{ y: '110%', transition: { duration: 0.3 } }}
                     transition={{ duration: 0.75, delay: 0.15 + index * 0.06, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    {item.label}
-                  </motion.a>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        'block py-2 font-display text-[clamp(2rem,9vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.035em]',
+                        isActive(item.href) ? 'text-paper' : 'text-paper/60',
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
                 </li>
               ))}
             </ul>
