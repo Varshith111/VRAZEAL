@@ -105,6 +105,8 @@ const anchors: [number, number][] = [
 
 export function ProcessArtifact({ progress }: { progress: MotionValue<number> }) {
   const p = progress;
+  const frame = seg(2, 0.05, 0.3);
+  const frameScale = useTransform(p, [frame.from, frame.to], [0.94, 1]);
 
   return (
     <svg
@@ -133,7 +135,7 @@ export function ProcessArtifact({ progress }: { progress: MotionValue<number> })
       </Layer>
 
       {/* 03 · Design — the frame, drawn over the plan. */}
-      <Layer p={p} {...seg(2, 0.05, 0.3)}>
+      <Layer p={p} {...frame}>
         <motion.rect
           x="96"
           y="64"
@@ -143,11 +145,10 @@ export function ProcessArtifact({ progress }: { progress: MotionValue<number> })
           fill="#FFFFFF"
           stroke="#000000"
           strokeWidth="1.4"
-          style={{ scale: useTransform(p, [seg(2, 0.05, 0.3).from, seg(2, 0.05, 0.3).to], [0.94, 1]) }}
-          transform-origin="200 150"
+          style={{ scale: frameScale, transformOrigin: '200px 150px' }}
         />
-        <Draw p={p} {...seg(2, 0.3, 0.5)} d="M96 92 L304 92" stroke="#000000" width="1.1" />
-        <Draw p={p} {...seg(2, 0.42, 0.62)} d="M150 92 L150 236" stroke="#E1E4E8" width="1" />
+        <Draw p={p} {...seg(2, 0.3, 0.5)} d="M96 92 L304 92" stroke="#000000" width={1.1} />
+        <Draw p={p} {...seg(2, 0.42, 0.62)} d="M150 92 L150 236" stroke="#E1E4E8" width={1} />
         {[122, 158, 194].map((y, index) => (
           <Draw
             key={y}
@@ -155,7 +156,7 @@ export function ProcessArtifact({ progress }: { progress: MotionValue<number> })
             {...seg(2, 0.55 + index * 0.08, 0.8 + index * 0.08)}
             d={`M166 ${y} L288 ${y}`}
             stroke="#EDEFF2"
-            width="1"
+            width={1}
           />
         ))}
       </Layer>
@@ -232,18 +233,24 @@ export function ProcessArtifact({ progress }: { progress: MotionValue<number> })
         {...seg(5, 0.1, 0.6)}
         d="M172 212 L200 200 L228 204 L256 184 L282 166"
         stroke="#0A84FF"
-        width="2"
+        width={2}
       />
       <Layer p={p} {...seg(5, 0.55, 0.72)}>
         <circle cx="282" cy="166" r="3.4" fill="#0A84FF" />
       </Layer>
-      <Draw p={p} {...seg(5, 0.6, 0.8)} d="M330 226 L330 176 M322 184 L330 176 L338 184" stroke="#000000" width="1.4" />
+      <Draw
+        p={p}
+        {...seg(5, 0.6, 0.8)}
+        d="M330 226 L330 176 M322 184 L330 176 L338 184"
+        stroke="#000000"
+        width={1.4}
+      />
       <Draw
         p={p}
         {...seg(5, 0.7, 1)}
         d="M92 244 C 48 210 48 90 92 56"
         stroke="#C9CDD3"
-        width="1"
+        width={1}
         dash="3 5"
       />
     </svg>
