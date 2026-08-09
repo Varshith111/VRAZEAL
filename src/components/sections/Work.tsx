@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from 'framer-motion';
+import { RevealGroup, RevealItem } from '@/components/motion/Reveal';
 import { SplitText } from '@/components/motion/SplitText';
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/ui/Section';
@@ -269,22 +270,29 @@ function SwipeDeck() {
 
   return (
     <div className="mt-12 md:mt-16">
-      <ul
-        ref={trackRef}
-        onScroll={onScroll}
-        className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain scroll-smooth px-gutter pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      >
-        {projects.map((project, index) => (
-          <li
-            key={project.id}
-            className="w-[86vw] max-w-[30rem] shrink-0 snap-start md:w-[62vw] md:max-w-[34rem]"
-          >
-            <SwipeCard project={project} index={index} />
-          </li>
-        ))}
-        {/* Safari drops a scroll container's trailing padding; this restores it. */}
-        <li aria-hidden className="w-px shrink-0" />
-      </ul>
+      {/* The whole deck reveals when the track enters view — staggering on each
+          card's own intersection would leave the off-screen cards blank until
+          they are swiped to, which reads as a loading bug rather than motion. */}
+      <RevealGroup stagger={0.08}>
+        <ul
+          ref={trackRef}
+          onScroll={onScroll}
+          className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain scroll-smooth px-gutter pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {projects.map((project, index) => (
+            <li
+              key={project.id}
+              className="w-[86vw] max-w-[30rem] shrink-0 snap-start md:w-[62vw] md:max-w-[34rem]"
+            >
+              <RevealItem y={24} className="h-full">
+                <SwipeCard project={project} index={index} />
+              </RevealItem>
+            </li>
+          ))}
+          {/* Safari drops a scroll container's trailing padding; this restores it. */}
+          <li aria-hidden className="w-px shrink-0" />
+        </ul>
+      </RevealGroup>
 
       {/* Pagination — tappable, and the only scroll affordance on a phone. */}
       <div className="shell mt-7 flex items-center gap-4">

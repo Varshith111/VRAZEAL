@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { RevealGroup, RevealItem } from '@/components/motion/Reveal';
 import { SplitText } from '@/components/motion/SplitText';
 import { Section } from '@/components/ui/Section';
 import { faqs } from '@/lib/content';
@@ -24,11 +25,11 @@ export function Faq() {
           </div>
 
           <div className="col-span-12 lg:col-span-7 lg:col-start-6">
-            <div className="border-t border-line">
+            <RevealGroup className="border-t border-line" stagger={0.06}>
               {faqs.map((faq, index) => {
                 const isOpen = open === index;
                 return (
-                  <div key={faq.q} className="border-b border-line">
+                  <RevealItem key={faq.q} y={18} className="border-b border-line">
                     <h3>
                       <button
                         type="button"
@@ -74,10 +75,10 @@ export function Faq() {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </div>
+                  </RevealItem>
                 );
               })}
-            </div>
+            </RevealGroup>
           </div>
         </div>
       </div>

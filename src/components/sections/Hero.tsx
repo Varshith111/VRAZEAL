@@ -174,7 +174,11 @@ export function Hero() {
             ))}
           </ul>
 
-          <a href="#trust" className="group flex items-center gap-3" aria-label="Scroll to next section">
+          <a
+            href="#trust"
+            className="group -my-2 flex min-h-[44px] items-center gap-3 py-2"
+            aria-label="Scroll to next section"
+          >
             <span className="eyebrow transition-colors group-hover:text-ink">Scroll</span>
             <span className="relative block h-8 w-px overflow-hidden bg-line">
               <motion.span

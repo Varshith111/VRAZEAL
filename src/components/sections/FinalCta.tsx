@@ -2,6 +2,7 @@
 
 import { useCallback, useRef } from 'react';
 import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useSpring } from 'framer-motion';
+import { RevealGroup, RevealItem } from '@/components/motion/Reveal';
 import { SplitText } from '@/components/motion/SplitText';
 import { Button } from '@/components/ui/Button';
 import { site } from '@/lib/site';
@@ -59,8 +60,8 @@ export function FinalCta() {
           </h2>
         </div>
 
-        <div className="mt-16 grid grid-cols-12 items-end gap-y-12 lg:mt-24">
-          <div className="col-span-12 lg:col-span-6">
+        <RevealGroup className="mt-16 grid grid-cols-12 items-end gap-y-12 lg:mt-24" stagger={0.12}>
+          <RevealItem y={22} className="col-span-12 lg:col-span-6">
             <Button
               as="a"
               href={`mailto:${site.email}?subject=New%20project%20enquiry`}
@@ -74,36 +75,37 @@ export function FinalCta() {
               Tell us what you are trying to build and what is currently in the way. You will get a
               considered reply from an engineer, not a sales sequence.
             </p>
-          </div>
+          </RevealItem>
 
-          <div className="col-span-12 lg:col-span-5 lg:col-start-8">
+          <RevealItem y={22} className="col-span-12 lg:col-span-5 lg:col-start-8">
             <div className="space-y-6">
               <div>
                 <p className="eyebrow text-paper/40">Direct</p>
                 <a
                   href={`mailto:${site.email}`}
-                  className="link-underline mt-3 block font-display text-[clamp(1.25rem,2.4vw,1.875rem)] font-medium tracking-[-0.03em]"
+                  className="mt-2 flex min-h-[44px] items-center font-display text-[clamp(1.25rem,2.4vw,1.875rem)] font-medium tracking-[-0.03em] lg:mt-3"
                 >
-                  {site.email}
+                  <span className="link-underline">{site.email}</span>
                 </a>
               </div>
               <div className="h-px w-full bg-paper/15" />
-              <div className="flex flex-wrap gap-x-8 gap-y-3">
+              {/* -my-3 keeps the 44px touch targets from adding visible space. */}
+              <div className="-my-3 flex flex-wrap gap-x-8">
                 {site.social.map((item) => (
                   <a
                     key={item.label}
                     href={item.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="eyebrow text-paper/45 transition-colors duration-300 hover:text-paper"
+                    className="eyebrow flex min-h-[44px] items-center text-paper/45 transition-colors duration-300 hover:text-paper"
                   >
                     {item.label}
                   </a>
                 ))}
               </div>
             </div>
-          </div>
-        </div>
+          </RevealItem>
+        </RevealGroup>
       </div>
     </section>
   );

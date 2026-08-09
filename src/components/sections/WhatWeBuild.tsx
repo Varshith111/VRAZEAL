@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useInView, useReducedMotion } from 'framer-motion';
+import { RevealGroup, RevealItem } from '@/components/motion/Reveal';
 import { SplitText } from '@/components/motion/SplitText';
 import { Section } from '@/components/ui/Section';
 import { capabilityIcons, IconArrowDiagonal } from '@/components/ui/icons';
@@ -12,29 +13,31 @@ import { cn } from '@/lib/utils';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 /** How long each discipline holds the screen before the section advances. */
-const CYCLE = 7000;
+const CYCLE = 5000;
 
 /**
  * Six disciplines, shown running rather than listed.
  *
- * Desktop is a vertical tablist against a pinned screen: the section cycles
- * itself until the pointer or keyboard arrives, then hands over control for
- * good — an auto-advance that keeps stealing the panel back is worse than no
- * auto-advance at all. Below `lg` the same content collapses to a disclosure
- * list, because a pinned panel and a scrolling list cannot share a phone.
+ * Desktop is a vertical tablist against a pinned screen that advances itself
+ * every five seconds. The timer holds while the pointer or keyboard is on the
+ * list — hovering a row is what selects it, so a timer that kept firing would
+ * swap the panel out from under the row the visitor is pointing at. It picks
+ * back up the moment they leave. Below `lg` the same content collapses to a
+ * disclosure list and never auto-advances: moving a phone reader's content out
+ * from under their thumb is not a feature.
  */
 export function WhatWeBuild() {
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const reduced = useReducedMotion();
 
   const [active, setActive] = useState(0);
-  const [locked, setLocked] = useState(false);
+  const [paused, setPaused] = useState(false);
 
   const listRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const inView = useInView(listRef, { margin: '-20% 0px -20% 0px' });
 
-  const auto = isDesktop && inView && !locked && !reduced;
+  const auto = isDesktop && inView && !paused && !reduced;
 
   useEffect(() => {
     if (!auto) return;
@@ -45,11 +48,8 @@ export function WhatWeBuild() {
     return () => window.clearTimeout(timer);
   }, [auto, active]);
 
-  /** Any deliberate input takes the section off autoplay permanently. */
-  const select = useCallback((index: number) => {
-    setActive(index);
-    setLocked(true);
-  }, []);
+  /** Selecting restarts the clock for the chosen discipline. */
+  const select = useCallback((index: number) => setActive(index), []);
 
   const onKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
@@ -88,9 +88,14 @@ export function WhatWeBuild() {
               roof is why the strategy, the interface, and the database agree with each other.
             </p>
             <p className="mt-5 hidden items-center gap-2 lg:flex">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+              <span
+                className={cn(
+                  'h-1.5 w-1.5 rounded-full transition-colors duration-500',
+                  auto ? 'animate-pulse bg-accent' : 'bg-muted/40',
+                )}
+              />
               <span className="eyebrow">
-                {locked ? 'Manual — select a discipline' : 'Running — hover to take control'}
+                {auto ? 'Auto-advancing every 5s' : 'Paused — you have control'}
               </span>
             </p>
           </div>
@@ -98,12 +103,17 @@ export function WhatWeBuild() {
 
         {isDesktop ? (
           <div ref={listRef} className="mt-14 grid grid-cols-12 gap-x-10 lg:mt-16">
-            {/* The index. Hovering is selecting — the panel is the payoff. */}
+            {/* The index. Hovering is selecting — the panel is the payoff, and
+                the five-second clock holds for as long as the visitor is here. */}
             <div
               role="tablist"
               aria-label="Capabilities"
               aria-orientation="vertical"
               onKeyDown={onKeyDown}
+              onMouseEnter={() => setPaused(true)}
+              onMouseLeave={() => setPaused(false)}
+              onFocus={() => setPaused(true)}
+              onBlur={() => setPaused(false)}
               className="col-span-5 border-t border-line"
             >
               {capabilities.map((capability, index) => {
@@ -277,13 +287,13 @@ export function WhatWeBuild() {
           </div>
         ) : (
           /* Below lg: one discipline open at a time, its screen inline. */
-          <div ref={listRef} className="mt-12 border-t border-line">
+          <RevealGroup className="mt-12 border-t border-line" stagger={0.06}>
             {capabilities.map((capability, index) => {
               const Icon = capabilityIcons[capability.id as keyof typeof capabilityIcons];
               const isOpen = index === active;
 
               return (
-                <div key={capability.id} className="border-b border-line">
+                <RevealItem key={capability.id} y={20} className="border-b border-line">
                   <h3>
                     <button
                       type="button"
@@ -355,10 +365,10 @@ export function WhatWeBuild() {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                </RevealItem>
               );
             })}
-          </div>
+          </RevealGroup>
         )}
       </div>
     </Section>

@@ -2,6 +2,8 @@
 
 import { useRef } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from 'framer-motion';
+import { useMediaQuery } from '@/lib/useMediaQuery';
+import { cn } from '@/lib/utils';
 
 const LINES = [
   'Can your business survive',
@@ -10,6 +12,20 @@ const LINES = [
   'past the spreadsheet?',
   'Probably not.',
   "That's why we exist.",
+];
+
+/**
+ * Phones get three beats instead of six.
+ *
+ * Six single-clause lines cost 4.4 screens of pinned scrolling on a 812px
+ * viewport — the visitor is held hostage swiping through an inverting black
+ * frame. Paired into whole sentences the section says the same thing in half
+ * the scroll, and each beat is a complete thought rather than a fragment.
+ */
+const MOBILE_LINES = [
+  'Can your business survive without the systems behind it?',
+  'Without software that scales past the spreadsheet?',
+  "Probably not. That's why we exist.",
 ];
 
 /** Where the frame flips from white to black, as a fraction of the pin. */
@@ -22,6 +38,11 @@ const INVERT: [number, number] = [0.6, 0.68];
 export function ScrollStory() {
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+
+  const lines = isDesktop ? LINES : MOBILE_LINES;
+  // Scroll cost is per beat, so the shorter mobile script gets a shorter pin.
+  const height = isDesktop ? '440svh' : '210svh';
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -48,7 +69,7 @@ export function ScrollStory() {
   }
 
   return (
-    <section id="story" ref={ref} className="relative h-[440svh]">
+    <section id="story" ref={ref} className="relative" style={{ height }}>
       <motion.div
         style={{ backgroundColor: background }}
         className="sticky top-0 flex h-[100svh] flex-col justify-between overflow-hidden py-10"
@@ -66,14 +87,15 @@ export function ScrollStory() {
         </div>
 
         <div className="relative flex-1">
-          {LINES.map((line, index) => (
+          {lines.map((line, index) => (
             <StoryLine
               key={line}
               text={line}
               index={index}
-              total={LINES.length}
+              total={lines.length}
               progress={scrollYProgress}
               color={foreground}
+              compact={!isDesktop}
             />
           ))}
         </div>
@@ -103,12 +125,15 @@ function StoryLine({
   total,
   progress,
   color,
+  compact,
 }: {
   text: string;
   index: number;
   total: number;
   progress: MotionValue<number>;
   color: MotionValue<string>;
+  /** Whole sentences need a smaller size and a wider measure than fragments. */
+  compact?: boolean;
 }) {
   const span = 1 / total;
   const start = index * span;
@@ -130,7 +155,12 @@ function StoryLine({
       <div className="shell w-full">
         <motion.p
           style={{ opacity, y, filter, color }}
-          className="max-w-[15ch] font-display text-display font-medium will-change-transform"
+          className={cn(
+            'font-display font-medium will-change-transform',
+            compact
+              ? 'max-w-[13ch] text-[clamp(2rem,8.6vw,3rem)] leading-[1.04] tracking-[-0.038em]'
+              : 'max-w-[15ch] text-display',
+          )}
         >
           {text}
         </motion.p>

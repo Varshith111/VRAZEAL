@@ -53,7 +53,11 @@ export function Navbar() {
           )}
         >
           <nav className="shell flex h-[var(--nav-h)] items-center justify-between gap-6" aria-label="Primary">
-            <Link href="/" className="relative z-10 -mx-2 shrink-0 px-2 py-2" aria-label={`${site.name} — home`}>
+            <Link
+              href="/"
+              className="relative z-10 -mx-2 flex min-h-[44px] shrink-0 items-center px-2"
+              aria-label={`${site.name} — home`}
+            >
               <Image
                 src="/logo-wordmark.png"
                 alt={site.name}
@@ -164,14 +168,14 @@ export function Navbar() {
               <a href={`mailto:${site.email}`} className="block text-lead text-paper/70">
                 {site.email}
               </a>
-              <div className="flex flex-wrap gap-x-6 gap-y-2">
+              <div className="-my-3 flex flex-wrap gap-x-6">
                 {site.social.map((item) => (
                   <a
                     key={item.label}
                     href={item.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="eyebrow text-paper/45 transition-colors hover:text-paper"
+                    className="eyebrow flex min-h-[44px] items-center text-paper/45 transition-colors hover:text-paper"
                   >
                     {item.label}
                   </a>
