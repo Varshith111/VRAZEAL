@@ -292,7 +292,12 @@ function Software() {
             ))}
 
             {/* The packet: intake → validate → route, on repeat. */}
+            {/* cx/cy duplicate `initial` on purpose: without a static base the
+                circle has no geometry until framer's first frame lands, and the
+                attribute is briefly written as "undefined". */}
             <motion.circle
+              cx="30"
+              cy="60"
               r="3"
               fill="#0A84FF"
               initial={{ cx: 30, cy: 60, opacity: 0 }}

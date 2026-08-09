@@ -1,201 +1,33 @@
-'use client';
+import { AboutHero } from '@/components/about/AboutHero';
+import { WhoWeAre } from '@/components/about/WhoWeAre';
+import { WhatWeBuildList } from '@/components/about/WhatWeBuildList';
+import { Approach } from '@/components/about/Approach';
+import { Process } from '@/components/about/Process';
+import { SelectedWork } from '@/components/about/SelectedWork';
+import { WhyVrazeal } from '@/components/about/WhyVrazeal';
+import { LongRun } from '@/components/about/LongRun';
+import { AboutCta } from '@/components/about/AboutCta';
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
-import { PageHero } from '@/components/ui/PageHero';
-import { Reveal, RevealGroup, RevealItem } from '@/components/motion/Reveal';
-
-const pillars = [
-  {
-    number: '01',
-    title: 'Technology-first thinking',
-    body: 'Every engagement starts with architecture. We design systems that are typed, tested, and built to survive the third year — not just the first demo.',
-  },
-  {
-    number: '02',
-    title: 'Creative precision',
-    body: 'Design is an engineering problem with correct answers. Typography, spacing, motion, and identity are treated with the same rigour as the code beneath them.',
-  },
-  {
-    number: '03',
-    title: 'Business outcomes',
-    body: 'We measure success by what changes in your business — not by deliverables. Every project starts with a clear definition of what winning looks like.',
-  },
-  {
-    number: '04',
-    title: 'Transparent process',
-    body: 'Fixed timelines, weekly builds, and no black boxes. You see the product take shape from week one instead of waiting for a reveal.',
-  },
-];
-
-const capabilities = [
-  'Website Development',
-  'Custom CRM & Software',
-  'AI Solutions & Automations',
-  'Branding & Graphic Design',
-  'Digital Marketing',
-];
-
+/**
+ * The page reads as one argument, in order: who we are → what we build → how we
+ * think → how we work → what we have built → why trust us → start a project.
+ *
+ * Backgrounds alternate paper / surface so neighbouring sections separate
+ * without needing extra rules, and the dark band lands late as the page's
+ * strongest beat before the close.
+ */
 export function AboutPage() {
   return (
     <>
-      <PageHero
-        eyebrow="About VRAZEAL"
-        title="Technology and creativity, built for business."
-        subtitle="We are a creative and technology agency that helps ambitious businesses grow through custom software, AI-powered systems, and premium digital experiences."
-      />
-
-      {/* Mission */}
-      <section className="py-section bg-surface">
-        <div className="shell">
-          <div className="h-px w-full bg-page-line" />
-          <div className="grid grid-cols-12 gap-y-10 pt-14 lg:gap-x-16">
-            <div className="col-span-12 lg:col-span-4">
-              <p className="font-mono text-label uppercase tracking-[0.16em] text-page-muted">
-                <span className="mr-3 text-page-ink">01</span>Our Mission
-              </p>
-            </div>
-            <div className="col-span-12 lg:col-span-7 lg:col-start-6">
-              <Reveal>
-                <p className="text-lead text-page-muted leading-[1.65] max-w-[58ch]">
-                  Most businesses are held back not by ambition, but by the tools they are running on.
-                  Spreadsheets masquerading as systems. Websites that do not convert. Processes that
-                  require a person to hold them together.
-                </p>
-              </Reveal>
-              <Reveal delay={0.1}>
-                <p className="mt-6 text-lead text-page-muted leading-[1.65] max-w-[58ch]">
-                  VRAZEAL exists to replace those constraints with software, systems, and brands that
-                  are built properly — so the business can grow into them rather than around them.
-                </p>
-              </Reveal>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* What we do */}
-      <section className="py-section bg-paper">
-        <div className="shell">
-          <div className="h-px w-full bg-page-line" />
-          <div className="grid grid-cols-12 gap-y-10 pt-14 lg:gap-x-16">
-            <div className="col-span-12 lg:col-span-4">
-              <p className="font-mono text-label uppercase tracking-[0.16em] text-page-muted">
-                <span className="mr-3 text-page-ink">02</span>What We Do
-              </p>
-            </div>
-            <div className="col-span-12 lg:col-span-7 lg:col-start-6">
-              <Reveal>
-                <p className="text-lead text-page-muted max-w-[52ch]">
-                  Five disciplines. One team. Every engagement draws from the full stack.
-                </p>
-              </Reveal>
-              <RevealGroup className="mt-10" stagger={0.05}>
-                {capabilities.map((cap, i) => (
-                  <RevealItem key={cap}>
-                    <div className="flex items-center justify-between border-b border-page-line py-5">
-                      <span className="text-[1.125rem] font-medium tracking-[-0.02em] text-page-ink">
-                        {cap}
-                      </span>
-                      <span className="font-mono text-label text-page-muted">
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                    </div>
-                  </RevealItem>
-                ))}
-              </RevealGroup>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Our approach */}
-      <section className="py-section bg-surface">
-        <div className="shell">
-          <div className="h-px w-full bg-page-line" />
-          <div className="pt-14">
-            <p className="font-mono text-label uppercase tracking-[0.16em] text-page-muted mb-12">
-              <span className="mr-3 text-page-ink">03</span>Our Approach
-            </p>
-            <RevealGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4" stagger={0.07}>
-              {pillars.map((pillar) => (
-                <RevealItem key={pillar.number}>
-                  <div className="flex flex-col gap-8 bg-paper rounded-card border border-page-line p-7 h-full">
-                    <span className="font-mono text-label text-page-muted">{pillar.number}</span>
-                    <div>
-                      <h3 className="text-[1.0625rem] font-medium tracking-[-0.02em] leading-[1.25] text-page-ink">
-                        {pillar.title}
-                      </h3>
-                      <p className="mt-3 text-[0.9375rem] leading-[1.65] text-page-muted">
-                        {pillar.body}
-                      </p>
-                    </div>
-                  </div>
-                </RevealItem>
-              ))}
-            </RevealGroup>
-          </div>
-        </div>
-      </section>
-
-      {/* Why VRAZEAL — dark section */}
-      <section className="py-section bg-ink text-paper">
-        <div className="shell">
-          <div className="h-px w-full bg-paper/10" />
-          <div className="grid grid-cols-12 gap-y-12 pt-14 lg:gap-x-16">
-            <div className="col-span-12 lg:col-span-5">
-              <p className="font-mono text-label uppercase tracking-[0.16em] text-paper/40">
-                <span className="mr-3 text-paper/70">04</span>Why VRAZEAL
-              </p>
-              <Reveal>
-                <h2 className="mt-8 text-h2 font-medium leading-[1.04]">
-                  Built for the long run, not the pitch.
-                </h2>
-              </Reveal>
-            </div>
-            <div className="col-span-12 lg:col-span-6 lg:col-start-7 flex flex-col justify-center gap-8">
-              {[
-                'We write every line of code for your business. Nothing is retrofitted from a previous client or built on a template.',
-                'We fix the timeline before development starts and publish a live build every week. You always know where the project stands.',
-                'We stay after launch. The first thirty days are included. After that, ongoing support is available — but the system is built to run without us.',
-              ].map((text, i) => (
-                <Reveal key={i} delay={i * 0.08}>
-                  <div className="flex gap-5 border-b border-paper/10 pb-8 last:border-0 last:pb-0">
-                    <span className="mt-[0.4rem] font-mono text-label text-paper/30 shrink-0 w-6">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <p className="text-[1.0625rem] leading-[1.65] text-paper/65">{text}</p>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-section bg-surface">
-        <div className="shell">
-          <div className="h-px w-full bg-page-line" />
-          <div className="pt-14 flex flex-col items-start gap-10 lg:flex-row lg:items-end lg:justify-between">
-            <Reveal>
-              <h2 className="text-h2 font-medium text-page-ink max-w-[16ch]">
-                Ready to build something that lasts?
-              </h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <div className="flex flex-wrap gap-4">
-                <Button as={Link} href="/contact" size="lg">
-                  Start a project
-                </Button>
-                <Button as={Link} href="/services" variant="outline" size="lg">
-                  See our services
-                </Button>
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
+      <AboutHero />
+      <WhoWeAre />
+      <WhatWeBuildList />
+      <Approach />
+      <Process />
+      <SelectedWork />
+      <WhyVrazeal />
+      <LongRun />
+      <AboutCta />
     </>
   );
 }

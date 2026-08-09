@@ -18,11 +18,14 @@ const CYCLE = 5000;
 /**
  * Six disciplines, shown running rather than listed.
  *
- * Desktop is a vertical tablist against a pinned screen that advances itself
- * every five seconds. The timer holds while the pointer or keyboard is on the
- * list — hovering a row is what selects it, so a timer that kept firing would
- * swap the panel out from under the row the visitor is pointing at. It picks
- * back up the moment they leave. Below `lg` the same content collapses to a
+ * Desktop plays itself: the screen changes every five seconds for as long as
+ * the section is on-screen, and the pointer has no say in it. Hovering a row
+ * deliberately does *not* select — a visitor resting the cursor anywhere near
+ * the list should still just watch the six disciplines go by.
+ *
+ * The clock only yields to a keyboard user who has tabbed into the list, which
+ * is the case where content changing underneath them is genuinely disorienting
+ * (and what WCAG 2.2.2 is about). Below `lg` the same content collapses to a
  * disclosure list and never auto-advances: moving a phone reader's content out
  * from under their thumb is not a feature.
  */
@@ -31,13 +34,13 @@ export function WhatWeBuild() {
   const reduced = useReducedMotion();
 
   const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [focused, setFocused] = useState(false);
 
   const listRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const inView = useInView(listRef, { margin: '-20% 0px -20% 0px' });
 
-  const auto = isDesktop && inView && !paused && !reduced;
+  const auto = isDesktop && inView && !focused && !reduced;
 
   useEffect(() => {
     if (!auto) return;
@@ -48,7 +51,7 @@ export function WhatWeBuild() {
     return () => window.clearTimeout(timer);
   }, [auto, active]);
 
-  /** Selecting restarts the clock for the chosen discipline. */
+  /** Keyboard and click still jump; the clock resumes from wherever they land. */
   const select = useCallback((index: number) => setActive(index), []);
 
   const onKeyDown = useCallback(
@@ -95,7 +98,7 @@ export function WhatWeBuild() {
                 )}
               />
               <span className="eyebrow">
-                {auto ? 'Auto-advancing every 5s' : 'Paused — you have control'}
+                {auto ? 'Auto-advancing every 5s' : 'Paused while you navigate'}
               </span>
             </p>
           </div>
@@ -103,17 +106,14 @@ export function WhatWeBuild() {
 
         {isDesktop ? (
           <div ref={listRef} className="mt-14 grid grid-cols-12 gap-x-10 lg:mt-16">
-            {/* The index. Hovering is selecting — the panel is the payoff, and
-                the five-second clock holds for as long as the visitor is here. */}
+            {/* The index reflects the clock rather than driving it. */}
             <div
               role="tablist"
               aria-label="Capabilities"
               aria-orientation="vertical"
               onKeyDown={onKeyDown}
-              onMouseEnter={() => setPaused(true)}
-              onMouseLeave={() => setPaused(false)}
-              onFocus={() => setPaused(true)}
-              onBlur={() => setPaused(false)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
               className="col-span-5 border-t border-line"
             >
               {capabilities.map((capability, index) => {
@@ -133,7 +133,6 @@ export function WhatWeBuild() {
                     aria-controls={`capability-panel-${capability.id}`}
                     tabIndex={isActive ? 0 : -1}
                     data-cursor="link"
-                    onMouseEnter={() => select(index)}
                     onFocus={() => select(index)}
                     onClick={() => select(index)}
                     className="group relative block w-full overflow-hidden border-b border-line px-1 py-6 text-left"

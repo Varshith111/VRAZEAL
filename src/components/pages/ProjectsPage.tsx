@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/Button';
 import { PageHero } from '@/components/ui/PageHero';
 import { Reveal } from '@/components/motion/Reveal';
 
-const projects = [
+/** Exported so the About page's Selected Work reads the same source. */
+export const projects = [
   {
     id: 'pharmacy-ecommerce',
     name: 'Pharmacy E-Commerce Platform',
