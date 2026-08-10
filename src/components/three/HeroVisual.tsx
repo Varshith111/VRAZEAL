@@ -103,6 +103,10 @@ function StaticSculpture() {
           cy="150"
           r="7"
           fill="#0A84FF"
+          // `initial` seeds the motion value. Framer does not read a plain SVG
+          // attribute into one, so without it the first commit writes cy as
+          // "undefined" before the keyframes take over.
+          initial={{ cy: 150 }}
           animate={{ cy: [150, 132, 150] }}
           transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}
         />

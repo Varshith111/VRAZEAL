@@ -37,15 +37,13 @@ export function WhyVrazeal() {
           </p>
         </div>
 
-        {/* The carousel is a dark-on-glass component, so it gets its own inked
-            stage rather than being recoloured to sit on paper — the page already
-            inverts for the story and contact bands, so a dark panel reads as
-            part of the system.
+        {/* Off-white stage so the white cards read as raised against it — on a
+            paper background they would have nothing to sit on but their shadow.
 
             overflow-hidden is load-bearing: cards sit at x: ±220 with a 192px
             width, so the cluster needs ~632px. Below that the outer cards have
             to clip, or they push the page into horizontal scroll. */}
-        <div className="mt-14 overflow-hidden rounded-card bg-ink px-4 py-12 sm:px-8 lg:mt-16 lg:py-16">
+        <div className="mt-14 overflow-hidden rounded-card border border-line bg-surface px-4 py-12 sm:px-8 lg:mt-16 lg:py-16">
           <CircularCarousel items={items} autoPlayInterval={5000} />
         </div>
 
