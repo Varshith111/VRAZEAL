@@ -18,8 +18,8 @@ import { AboutSection, ease, LineReveal } from './shared';
 export function WhatWeBuildList() {
   return (
     <AboutSection index="02" label="What we build" tone="surface">
-      <div className="mt-14 lg:mt-20">
-        <div className="grid grid-cols-12 items-end gap-y-6">
+      <div className="mt-4 lg:mt-6">
+        <div className="grid grid-cols-12 items-end gap-y-4">
           <LineReveal
             className="col-span-12 text-[clamp(1.875rem,4vw,3.5rem)] font-medium leading-[1.06] tracking-[-0.038em] text-page-ink lg:col-span-6"
             lines={['What we build']}
@@ -30,7 +30,7 @@ export function WhatWeBuildList() {
           </p>
         </div>
 
-        <ul className="mt-12 border-t border-page-line lg:mt-16">
+        <ul className="mt-6 border-t border-page-line lg:mt-8">
           {aboutServices.map((service, index) => (
             <ServiceRow key={service.number} service={service} index={index} />
           ))}
@@ -61,7 +61,7 @@ function ServiceRow({
       <Link
         href={service.href}
         data-cursor="link"
-        className="group relative flex w-full items-start gap-5 overflow-hidden px-1 py-8 sm:gap-8 lg:items-center lg:py-10"
+        className="group relative flex w-full items-start gap-5 overflow-hidden px-1 py-4 sm:gap-8 lg:items-center lg:py-6"
       >
         {/* Wipe fill, matching the row treatment used elsewhere on the site. */}
         <span
