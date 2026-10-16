@@ -4,26 +4,9 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { PageHero } from '@/components/ui/PageHero';
 import { Reveal } from '@/components/motion/Reveal';
-
-/** Exported so the About page's Selected Work reads the same source. */
-export const projects = [
-  {
-    id: 'pharmacy-ecommerce',
-    name: 'Pharmacy E-Commerce Platform',
-    industry: 'Healthcare / Retail',
-    services: ['Website Development', 'Custom Software'],
-    year: '2024',
-    description:
-      'A full-stack e-commerce platform for a pharmacy chain — product catalogue, prescription management, order tracking, and an admin dashboard for inventory and fulfilment.',
-    highlights: [
-      'Custom product & prescription management',
-      'Real-time inventory tracking',
-      'Admin dashboard for staff',
-      'Mobile-first responsive design',
-    ],
-    status: 'Delivered',
-  },
-];
+import { ProjectShowcase } from '@/components/sections/ProjectShowcase';
+import { IconArrowDiagonal } from '@/components/ui/icons';
+import { projects } from '@/lib/content';
 
 export function ProjectsPage() {
   return (
@@ -46,15 +29,16 @@ export function ProjectsPage() {
                     <div className="flex items-baseline justify-between gap-4 mb-6">
                       <span className="font-mono text-label text-page-muted">{project.year}</span>
                       <span className="font-mono text-label text-page-muted border border-page-line rounded-pill px-3 py-1">
-                        {project.status}
+                        {project.status ?? 'Delivered'}
                       </span>
                     </div>
                     <h2 className="text-h3 font-medium tracking-[-0.03em] leading-[1.1] text-page-ink">
-                      {project.name}
+                      {project.client}
                     </h2>
-                    <p className="mt-3 font-mono text-label text-page-muted">{project.industry}</p>
+                    <p className="mt-3 text-[1.0625rem] leading-[1.5] text-page-ink">{project.title}</p>
+                    <p className="mt-4 font-mono text-label text-page-muted">{project.sector}</p>
                     <div className="mt-6 flex flex-wrap gap-2">
-                      {project.services.map((s) => (
+                      {(project.services ?? project.stack).map((s) => (
                         <span
                           key={s}
                           className="rounded-pill border border-page-line px-3 py-1.5 font-mono text-[0.625rem] uppercase tracking-[0.11em] text-page-muted"
@@ -63,25 +47,53 @@ export function ProjectsPage() {
                         </span>
                       ))}
                     </div>
+                    {project.services && (
+                      <div className="mt-8">
+                        <p className="font-mono text-label uppercase text-page-muted">Technologies</p>
+                        <p className="mt-3 text-[0.9375rem] leading-[1.7] text-page-ink">{project.stack.join(' · ')}</p>
+                      </div>
+                    )}
+                    {project.url && (
+                      <a
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-cursor="link"
+                        className="group mt-8 inline-flex items-center gap-2 text-[0.9375rem] font-medium text-page-ink"
+                      >
+                        <span className="link-underline">Visit {project.url.replace(/^https?:\/\/(www\.)?/, '')}</span>
+                        <IconArrowDiagonal className="transition-transform duration-500 ease-expo group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                      </a>
+                    )}
                   </Reveal>
                 </div>
 
                 {/* Right */}
                 <div className="col-span-12 lg:col-span-7 lg:col-start-6">
                   <Reveal delay={0.1}>
-                    <p className="text-[1.0625rem] leading-[1.7] text-page-muted max-w-[58ch]">
-                      {project.description}
-                    </p>
+                    <div className="space-y-5">
+                      {(
+                        [
+                          ['Problem', project.problem],
+                          ['Solution', project.solution],
+                        ] as const
+                      ).map(([label, body]) => (
+                        <div key={label}>
+                          <p className="font-mono text-label uppercase text-page-muted">{label}</p>
+                          <p className="mt-2 max-w-[62ch] text-[1.0625rem] leading-[1.7] text-page-muted">{body}</p>
+                        </div>
+                      ))}
+                    </div>
                   </Reveal>
                   <Reveal delay={0.15}>
                     <ul className="mt-8 space-y-3">
-                      {project.highlights.map((h) => (
+                      {(project.highlights ?? []).map((h, i) => (
                         <li
                           key={h}
                           className="flex items-center gap-4 text-[0.9375rem] text-page-muted border-b border-page-line pb-3 last:border-0"
                         >
                           <span className="font-mono text-label text-page-muted shrink-0 w-5">
-                            {String(project.highlights.indexOf(h) + 1).padStart(2, '0')}
+                            {String(i + 1).padStart(2, '0')}
                           </span>
                           {h}
                         </li>
@@ -89,6 +101,12 @@ export function ProjectsPage() {
                     </ul>
                   </Reveal>
                 </div>
+
+                {project.screens?.length ? (
+                  <div className="col-span-12 lg:pt-6">
+                    <ProjectShowcase project={project} />
+                  </div>
+                ) : null}
               </div>
             </div>
           ))}

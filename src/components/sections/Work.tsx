@@ -7,6 +7,7 @@ import { SplitText } from '@/components/motion/SplitText';
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/ui/Section';
 import { IconArrowDiagonal } from '@/components/ui/icons';
+import { ProjectGallery } from './ProjectGallery';
 import { ProjectVisual } from './ProjectVisuals';
 import { projects, type Project } from '@/lib/content';
 import { useMediaQuery } from '@/lib/useMediaQuery';
@@ -24,15 +25,15 @@ export function Work() {
   });
 
   return (
-    <Section id="work" index="05" label="Selected work" meta="Four of twenty-five">
+    <Section id="work" index="05" label="Selected work" meta="Shipped and live">
       <div className="shell mt-14 lg:mt-20">
         <div className="grid grid-cols-12 items-end gap-y-8">
           <h2 className="col-span-12 text-h2 font-medium lg:col-span-7">
-            <SplitText text="Work that had to hold up" />
+            <SplitText text="Work that is live" />
           </h2>
           <p className="col-span-12 max-w-prose text-lead text-muted lg:col-span-5">
-            Each of these replaced something the business had outgrown. The interesting part is never
-            the launch — it is what the numbers did ninety days later.
+            Real products, in production, used by real customers every day. Click through the
+            screens to see what we built.
           </p>
         </div>
       </div>
@@ -56,10 +57,10 @@ export function Work() {
 
       <div className="shell mt-16 flex flex-wrap items-center justify-between gap-6 border-t border-line pt-10 lg:mt-24">
         <p className="max-w-[38ch] text-lead text-muted">
-          The rest of the portfolio is under NDA. Happy to walk you through it on a call.
+          More projects are in progress. Happy to walk you through any of them on a call.
         </p>
-        <Button as="a" href="#contact" variant="outline" data-cursor="link">
-          Request the full portfolio
+        <Button as="a" href="/projects" variant="outline" data-cursor="link">
+          See all projects
         </Button>
       </div>
     </Section>
@@ -136,7 +137,38 @@ function Stack({ project, className }: { project: Project; className?: string })
   );
 }
 
+/** Screenshots when the project has them, otherwise the drawn stand-in. */
+function Visual({ project, compact = false }: { project: Project; compact?: boolean }) {
+  const screens = [
+    ...(project.screens ?? []),
+    ...(project.adminScreens ?? []).map((s) => ({ ...s, label: `Admin · ${s.label}` })),
+  ];
+  return screens.length ? (
+    <ProjectGallery screens={screens} url={project.url} compact={compact} />
+  ) : (
+    <ProjectVisual variant={project.visual} />
+  );
+}
+
 function AskLink({ project, className }: { project: Project; className?: string }) {
+  if (project.url) {
+    return (
+      <a
+        href={project.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-cursor="view"
+        data-cursor-label="Visit"
+        className={cn(
+          'group inline-flex items-center gap-2 self-start text-[0.9375rem] font-medium text-ink',
+          className,
+        )}
+      >
+        <span className="link-underline">Visit {project.url.replace(/^https?:\/\/(www\.)?/, '')}</span>
+        <IconArrowDiagonal className="transition-transform duration-500 ease-expo group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+      </a>
+    );
+  }
   return (
     <a
       href="#contact"
@@ -210,8 +242,8 @@ function ProjectPanel({
           </div>
 
           <div className="col-span-7 flex flex-col">
-            <motion.div style={{ y: visualY }} className="h-[min(42vh,21rem)] w-full">
-              <ProjectVisual variant={project.visual} />
+            <motion.div style={{ y: visualY }} className="h-[min(46vh,24rem)] w-full">
+              <Visual project={project} />
             </motion.div>
 
             {/* Impact over stack, both full width. Side by side, the stack gets
@@ -327,8 +359,8 @@ function SwipeDeck() {
 function SwipeCard({ project, index }: { project: Project; index: number }) {
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-card border border-line bg-paper">
-      <div className="h-[13rem] w-full border-b border-line p-4 md:h-[17rem] md:p-5">
-        <ProjectVisual variant={project.visual} />
+      <div className="h-[15rem] w-full border-b border-line p-4 md:h-[19rem] md:p-5">
+        <Visual project={project} compact />
       </div>
 
       <div className="flex flex-1 flex-col p-6 md:p-8">

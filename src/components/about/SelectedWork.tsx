@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import { IconArrowDiagonal } from '@/components/ui/icons';
-import { projects } from '@/components/pages/ProjectsPage';
+import { projects } from '@/lib/content';
 import { cn } from '@/lib/utils';
 import { AboutSection, ease, LineReveal } from './shared';
 
@@ -98,20 +98,20 @@ function ProjectRow({
         transition={{ duration: 0.9, delay: 0.12, ease }}
       >
         <div className="flex items-baseline justify-between gap-4">
-          <span className="font-mono text-label text-page-muted">{project.industry}</span>
+          <span className="font-mono text-label text-page-muted">{project.sector}</span>
           <span className="font-mono text-label text-page-muted">{project.year}</span>
         </div>
 
         <h3 className="mt-5 font-display text-[clamp(1.5rem,2.6vw,2.375rem)] font-medium leading-[1.1] tracking-[-0.034em] text-page-ink">
-          {project.name}
+          {project.client}
         </h3>
 
         <p className="mt-4 max-w-[48ch] text-[0.9375rem] leading-[1.65] text-page-muted lg:text-[1.0625rem]">
-          {project.description}
+          {project.title}
         </p>
 
         <ul className="mt-7 flex flex-wrap gap-1.5">
-          {project.services.map((service) => (
+          {(project.services ?? project.stack).map((service) => (
             <li
               key={service}
               className="rounded-pill border border-page-line px-3 py-1.5 font-mono text-[0.625rem] uppercase tracking-[0.11em] text-page-muted"

@@ -207,6 +207,14 @@ export const processSteps: ProcessStep[] = [
   },
 ];
 
+export type ProjectScreen = {
+  src: string;
+  alt: string;
+  label: string;
+  /** One line on what the screen does, used by the Projects page walkthrough. */
+  caption?: string;
+};
+
 export type Project = {
   id: string;
   client: string;
@@ -220,80 +228,65 @@ export type Project = {
   outcome: { value: string; label: string }[];
   stack: string[];
   visual: 'dashboard' | 'intelligence' | 'commerce' | 'identity';
+  /** Live URL, shown in the browser frame and linked from the case study. */
+  url?: string;
+  /** Real screenshots. When present they replace the drawn `visual`. */
+  screens?: ProjectScreen[];
+  /** Screens from the internal admin portal, shown as a second walkthrough. */
+  adminScreens?: ProjectScreen[];
+  /** Short feature list used on the Projects and About pages. */
+  highlights?: string[];
+  services?: string[];
+  status?: string;
 };
 
-/**
- * NOTE: replace with real engagements before launch — these are structured
- * examples that demonstrate the layout, not published case studies.
- */
 export const projects: Project[] = [
   {
-    id: 'meridian',
-    client: 'Meridian Health',
-    sector: 'Healthcare operations',
-    year: '2025',
-    title: 'A patient operations platform replacing eleven spreadsheets.',
+    id: 'flymeds',
+    client: 'FlyMeds',
+    sector: 'Online pharmacy & healthcare e-commerce',
+    year: '2026',
+    title: 'A full-stack online pharmacy for affordable healthcare across India.',
     problem:
-      'Scheduling, intake, and billing lived in eleven spreadsheets and a booking tool nobody trusted. Referrals sat for days because no single person could see the whole queue.',
+      'Priyanka Generic Medical Store needed to take its pharmacy online across India — making medicine discovery, prescription-based ordering and access to affordable generic alternatives convenient, transparent and secure.',
     solution:
-      'One system with role-based access for four staff types, a shared intake queue, and billing that reads from the same record the front desk edits — so the data can only be entered once.',
+      'FlyMeds: a responsive Next.js storefront on an Express.js backend, covering the medicine catalogue, product discovery, customer accounts, cart and checkout, prescription handling and admin order management — built on PostgreSQL and Prisma, with Redis and BullMQ for reliable order processing and Cloudflare R2 for storage, ready to scale.',
     outcome: [
-      { value: '−58%', label: 'Referral to appointment' },
-      { value: '11→1', label: 'Systems consolidated' },
+      { value: '5,170', label: 'Medicines in the catalogue' },
+      { value: '60%', label: 'Max savings with generics' },
     ],
-    stack: ['Next.js', 'TypeScript', 'PostgreSQL', 'Prisma', 'AWS'],
-    visual: 'dashboard',
-  },
-  {
-    id: 'kite',
-    client: 'Kite',
-    sector: 'Legal technology',
-    year: '2025',
-    title: 'Document intelligence that reads contracts in seconds.',
-    problem:
-      'Associates spent whole days reading 40,000 legacy agreements for a handful of clauses. Three agencies had quoted nine months and none could say how accuracy would be proven.',
-    solution:
-      'A retrieval pipeline with clause-level citations, confidence scoring, and a review queue that routes anything below threshold to a human — plus an evaluation harness that measures accuracy on every deploy.',
-    outcome: [
-      { value: '40k', label: 'Documents indexed' },
-      { value: '9.4s', label: 'Median review time' },
-    ],
-    stack: ['Python', 'OpenAI', 'pgvector', 'FastAPI', 'Docker'],
-    visual: 'intelligence',
-  },
-  {
-    id: 'atlas',
-    client: 'Atlas Supply',
-    sector: 'B2B commerce',
-    year: '2024',
-    title: 'A trade storefront and CRM sharing one source of truth.',
-    problem:
-      'The storefront and the sales team ran on separate systems with separate price lists. Every trade order was re-keyed by hand, and the two quoted different numbers often enough that buyers stopped ordering online.',
-    solution:
-      'Customer-specific pricing, quote-to-order, and account management rebuilt on one data model, so a contract price changes in exactly one place and both sides read it instantly.',
-    outcome: [
-      { value: '3.2×', label: 'Online order volume' },
-      { value: '0', label: 'Manual re-entry steps' },
-    ],
-    stack: ['Next.js', 'Node.js', 'PostgreSQL', 'Stripe', 'Vercel'],
+    stack: ['Next.js', 'React', 'Express.js', 'PostgreSQL', 'Prisma', 'Redis', 'BullMQ', 'Cloudflare R2'],
     visual: 'commerce',
-  },
-  {
-    id: 'nordwerk',
-    client: 'Nordwerk',
-    sector: 'Industrial manufacturing',
-    year: '2024',
-    title: 'A forty-year-old manufacturer, repositioned for its next decade.',
-    problem:
-      'Forty years of drift had left six versions of the logo in circulation and a website that undersold the engineering behind the product. Buyers could not tell the company apart from its cheapest competitor.',
-    solution:
-      'Naming, identity, motion language, and a product site built as one system with the rules written down — covering everything from the spec sheet to the trade-show wall.',
-    outcome: [
-      { value: '+124%', label: 'Qualified enquiries' },
-      { value: '98', label: 'Lighthouse performance' },
+    url: 'https://www.flymeds.in',
+    services: ['Website Development', 'Custom Software', 'Admin Portal'],
+    status: 'Live',
+    highlights: [
+      'Branded vs generic price comparison',
+      'Prescription upload with pharmacist verification',
+      'Quick Buy — pharmacist builds the cart from the Rx',
+      'Order tracking, wishlist and saved addresses',
+      'Category browsing across 5,000+ medicines',
+      'Razorpay, UPI and cash-on-delivery checkout',
+      'Admin portal: orders, catalogue, inventory, reports and audit log',
     ],
-    stack: ['Brand system', 'Art direction', 'Next.js', 'Motion'],
-    visual: 'identity',
+    screens: [
+      { src: '/work/flymeds/home.webp', caption: 'Search any medicine and see the generic alternative and its savings before you buy.', label: 'Home', alt: 'FlyMeds home page with medicine search and generic savings' },
+      { src: '/work/flymeds/medicines.png', caption: '5,170 medicines, filterable by health condition, with discount and Rx badges on every card.', label: 'Catalogue', alt: 'FlyMeds medicine catalogue with category filters and discounts' },
+      { src: '/work/flymeds/prescription.png', caption: 'Upload a prescription, verify age, and let a licensed pharmacist approve it — or build the cart for you.', label: 'Prescriptions', alt: 'FlyMeds prescription upload with pharmacist verification' },
+      { src: '/work/flymeds/orders.png', caption: 'Every order with its live status, from prescription pending to packed and delivered.', label: 'Orders', alt: 'FlyMeds order history with order statuses' },
+      { src: '/work/flymeds/cart.png', caption: 'Considered empty states that guide people back to browsing instead of a dead end.', label: 'Cart', alt: 'FlyMeds empty cart state' },
+      { src: '/work/flymeds/footer.png', caption: 'Licence number, pharmacy address and payment options up front, so customers can trust the store.', label: 'Footer', alt: 'FlyMeds footer with pharmacy licence and contact details' },
+    ],
+    adminScreens: [
+      { src: '/work/flymeds/admin/orders.png', label: 'Orders', caption: 'One queue for every order, with blockers flagged up front — Rx not approved, unpaid, or missing an address — and scan-to-pack for the warehouse.', alt: 'FlyMeds admin orders queue with status filters' },
+      { src: '/work/flymeds/admin/products.png', label: 'Products', caption: 'Manage 5,229 products with Excel round-trips, bulk import, stock and generic-alternative mapping in one place.', alt: 'FlyMeds admin product catalogue with bulk tools' },
+      { src: '/work/flymeds/admin/inventory.png', label: 'Inventory', caption: 'Stock per variant with inline add and remove, and low-stock and out-of-stock filters.', alt: 'FlyMeds admin inventory with stock adjustments' },
+      { src: '/work/flymeds/admin/sales.png', label: 'Sales reports', caption: 'Revenue, orders and order value against the previous period, with CSV and Excel export on every chart.', alt: 'FlyMeds admin sales report with daily sales chart' },
+      { src: '/work/flymeds/admin/products-report.png', label: 'Product insights', caption: 'Top and slowest sellers, generic share, and the searches that returned nothing.', alt: 'FlyMeds admin product report with top medicines' },
+      { src: '/work/flymeds/admin/marketing.png', label: 'Marketing', caption: 'Traffic, bounce rate and a purchase funnel from product view to order placed, from built-in analytics.', alt: 'FlyMeds admin marketing analytics with purchase funnel' },
+      { src: '/work/flymeds/admin/banners.webp', label: 'Homepage banners', caption: 'The marketing team reorders and swaps storefront banners without a deploy.', alt: 'FlyMeds admin homepage banner manager' },
+      { src: '/work/flymeds/admin/audit-log.png', label: 'Audit log', caption: 'Every sign-in and change by admins, pharmacists and inventory staff, filterable by user, role and module.', alt: 'FlyMeds admin audit log of staff activity' },
+    ],
   },
 ];
 

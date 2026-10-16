@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import { IconArrowDiagonal } from '@/components/ui/icons';
-import { projects } from '@/components/pages/ProjectsPage';
+import { ProjectGallery } from '@/components/sections/ProjectGallery';
+import { projects } from '@/lib/content';
 import { AboutSection, ease, LineReveal } from './shared';
 
 export function SelectedWorkShowcase() {
@@ -41,20 +42,20 @@ export function SelectedWorkShowcase() {
                     </span>
                     <span className="h-1 w-1 rounded-full bg-page-line" />
                     <span className="font-mono text-xs font-semibold uppercase tracking-widest text-page-ink">
-                      {project.industry}
+                      {project.sector}
                     </span>
                   </div>
 
                   <h3 className="mt-4 font-display text-3xl font-medium tracking-tight text-page-ink lg:text-4xl">
-                    {project.name}
+                    {project.client}
                   </h3>
 
                   <p className="mt-4 text-base leading-relaxed text-page-muted">
-                    {project.description}
+                    {project.title}
                   </p>
 
                   <div className="mt-6 flex flex-wrap gap-2">
-                    {project.highlights.map((h) => (
+                    {(project.highlights ?? []).map((h) => (
                       <span
                         key={h}
                         className="rounded-full border border-page-line bg-surface px-3 py-1 font-mono text-[0.6875rem] uppercase tracking-wider text-page-muted"
@@ -78,26 +79,10 @@ export function SelectedWorkShowcase() {
 
                 {/* Right Visual Architecture Card */}
                 <div className="col-span-12 lg:col-span-6">
-                  <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-page-line bg-surface p-6 flex flex-col justify-between">
-                    <div className="flex items-center justify-between border-b border-page-line/60 pb-3">
-                      <span className="font-mono text-[0.625rem] uppercase tracking-widest text-page-muted">
-                        Platform Architecture
-                      </span>
-                      <span className="font-mono text-[0.625rem] uppercase tracking-widest text-page-ink">
-                        {project.status}
-                      </span>
-                    </div>
-
-                    <div className="my-auto text-center py-6">
-                      <span className="font-display text-5xl font-bold tracking-tighter text-page-ink/15 lg:text-7xl select-none">
-                        VRAZEAL
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between font-mono text-[0.625rem] text-page-muted">
-                      <span>Production Grade</span>
-                      <span>Next.js · Headless · Custom API</span>
-                    </div>
+                  <div className="aspect-[16/11]">
+                    {project.screens?.length ? (
+                      <ProjectGallery screens={project.screens} url={project.url} compact />
+                    ) : null}
                   </div>
                 </div>
               </div>
