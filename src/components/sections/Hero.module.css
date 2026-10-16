@@ -1,6 +1,9 @@
 .hero {
   --accent: #1f5bff;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
   overflow: hidden;
   color: #0b0b0d;
   font-family: var(--font-hero-sans), system-ui, sans-serif;
@@ -16,8 +19,11 @@
   margin: 0 auto;
   padding: 0 clamp(20px, 6.7vw, 96px);
   box-sizing: border-box;
+  width: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .mono {
@@ -34,8 +40,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 48px;
-  padding: 30px 0 52px;
+  gap: 32px 48px;
+  padding: clamp(12px, 2.5vh, 28px) 0 clamp(16px, 3vh, 32px);
 }
 
 .left {
@@ -43,7 +49,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: clamp(16px, 2.6vh, 26px);
 }
 
 .eyebrowRow {
@@ -51,14 +57,14 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 10px 18px;
-  font-size: 13px;
+  font-size: 12px;
   color: #0b0b0d;
 }
 
 .headline {
   margin: 0;
   font-weight: 600;
-  font-size: clamp(44px, 5.7vw, 88px);
+  font-size: clamp(38px, 4.4vw, 68px);
   line-height: 1;
   letter-spacing: -0.045em;
   text-wrap: balance;
@@ -66,8 +72,8 @@
 
 .lead {
   margin: 0;
-  max-width: 520px;
-  font-size: 20px;
+  max-width: 500px;
+  font-size: 17px;
   line-height: 1.6;
   color: #5b6270;
 }
@@ -78,10 +84,10 @@
   gap: 12px;
   text-decoration: none;
   font-weight: 500;
-  font-size: 18px;
+  font-size: 16px;
   border-radius: 999px;
-  padding: 0 28px;
-  height: 58px;
+  padding: 0 24px;
+  height: 50px;
   transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
 }
 .btn:hover {
@@ -154,8 +160,9 @@
 .stage {
   position: relative;
   width: 100%;
-  max-width: 600px;
-  height: 560px;
+  max-width: 560px;
+  /* Leaves room for the nav, the selector strip and padding so the hero fits one screen. */
+  height: clamp(400px, calc(100svh - 270px), 500px);
   border-radius: 28px;
   border: 1px solid rgba(11, 11, 13, 0.09);
   overflow: hidden;
@@ -232,14 +239,14 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   column-gap: 24px;
-  padding-bottom: 40px;
+  padding-bottom: clamp(16px, 3vh, 28px);
 }
 .cap {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 22px 24px 26px 0;
+  gap: 6px;
+  padding: 16px 20px 0 0;
   background: none;
   border: 0;
   border-top: 1px solid rgba(11, 11, 13, 0.14);
@@ -254,8 +261,8 @@
   transition: color 0.2s;
 }
 .capdesc {
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.45;
   color: #5b6270;
 }
 .cap:hover .capname,
@@ -280,7 +287,7 @@
 
 @media (max-width: 640px) {
   .stage {
-    height: 480px;
+    height: 440px;
   }
 }
 
