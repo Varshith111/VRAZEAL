@@ -35,14 +35,14 @@ const EASE = [0.16, 1, 0.3, 1] as const;
  * Four panels side by side. The active one opens to tell its story; the
  * others fold down to a vertical label. Hover on desktop, tap anywhere.
  */
-export function ValuePillars() {
+export function ValuePillars({ index = '03' }: { index?: string }) {
   const [active, setActive] = useState(0);
 
   return (
     <section className="relative bg-void py-section">
       <div className="shell">
         <SectionIntro
-          index="03"
+          index={index}
           label="How we create value"
           title={[
             'Four steps from',

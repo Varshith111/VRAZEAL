@@ -1,12 +1,13 @@
 import { Capabilities } from '@/components/home/Capabilities';
 import { DisciplineMarquee } from '@/components/home/DisciplineMarquee';
 import { FaqSection } from '@/components/home/FaqSection';
-import { FeaturedWork } from '@/components/home/FeaturedWork';
+import { WorkOrbit } from '@/components/home/WorkOrbit';
 import { HomeHero } from '@/components/home/HomeHero';
 import { Manifesto } from '@/components/home/Manifesto';
 import { ProcessSteps } from '@/components/home/ProcessSteps';
 import { TechStack } from '@/components/home/TechStack';
 import { WhyBento } from '@/components/home/WhyBento';
+import { ValuePillars } from '@/components/services/ValuePillars';
 import { ClosingCta } from '@/components/ui/ClosingCta';
 import { ScrollProgress } from '@/components/ui/ScrollProgress';
 import { faqs } from '@/lib/content';
@@ -31,7 +32,8 @@ export default function HomePage() {
       <DisciplineMarquee />
       <Manifesto />
       <Capabilities />
-      <FeaturedWork />
+      <WorkOrbit />
+      <ValuePillars index="04" />
       <ProcessSteps />
       <WhyBento />
       <TechStack />

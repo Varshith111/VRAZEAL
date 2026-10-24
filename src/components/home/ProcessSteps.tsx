@@ -37,7 +37,7 @@ export function ProcessSteps() {
     <section id="process" className="relative scroll-mt-10 bg-void pt-section">
       <div className="shell">
         <SectionIntro
-          index="04"
+          index="05"
           label="Process"
           title={[
             'No black box.',

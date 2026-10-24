@@ -19,7 +19,7 @@ export function FaqSection() {
         <div className="col-span-12 lg:col-span-4">
           <div className="lg:sticky lg:top-32">
             <p className="eyebrow flex items-center gap-3">
-              <span className="text-paper">07</span>
+              <span className="text-paper">08</span>
               <span className="h-px w-8 bg-paper/25" />
               Details
             </p>

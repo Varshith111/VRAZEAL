@@ -387,7 +387,7 @@ export function WhyBento() {
     <section id="approach" className="relative scroll-mt-10 bg-void py-section">
       <div className="shell">
         <SectionIntro
-          index="05"
+          index="06"
           label="Why VRAZEAL"
           title={[
             'Built properly,',

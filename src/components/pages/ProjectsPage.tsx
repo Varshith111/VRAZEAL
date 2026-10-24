@@ -37,7 +37,7 @@ export function ProjectsPage() {
         ]}
         subtitle="A focused portfolio of custom builds for real businesses. Every engagement is bespoke — no templates, no recycled layouts."
         meta={[
-          { label: 'Delivered', value: '25+ projects' },
+          { label: 'Delivered', value: '5+ projects' },
           { label: 'Featured', value: projects[0]?.client },
           { label: 'Status', value: <span className="text-accent-bright">● {projects[0]?.status ?? 'Live'}</span> },
         ]}

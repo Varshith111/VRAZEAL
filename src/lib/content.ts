@@ -17,11 +17,11 @@ export type Stat = {
  * more trust than showing no stat at all.
  */
 export const stats: Stat[] = [
-  { value: 25, suffix: '+', label: 'Projects delivered', note: 'Shipped, not prototyped' },
-  { value: 15, suffix: '+', label: 'Industries served', note: 'Health, finance, retail, logistics' },
+  { value: 5, suffix: '+', label: 'Projects delivered', note: 'Shipped, not prototyped' },
+  { value: 5, suffix: '+', label: 'Industries served', note: 'Health, finance, retail, logistics' },
   { value: 3, suffix: '+', label: 'Countries', note: 'Distributed by design' },
   { value: 20, suffix: '+', label: 'Technologies', note: 'Chosen for the next decade' },
-  { value: 6, suffix: '', label: 'Years building', note: 'Long enough to have opinions' },
+  { value: 1, suffix: '', label: 'Year building', note: 'And counting' },
 ];
 
 export type Capability = {
@@ -240,6 +240,10 @@ export type Project = {
   status?: string;
   /** The business behind the product, when it differs from the product name. */
   clientName?: string;
+  /** Short industry label, used where the full sector is too long. */
+  industry?: string;
+  /** Product logo, shown before the screenshot in the home-page work stage. */
+  logo?: { src: string; width: number; height: number };
 };
 
 export const projects: Project[] = [
@@ -247,6 +251,8 @@ export const projects: Project[] = [
     id: 'flymeds',
     client: 'FlyMeds',
     clientName: 'Priyanka Generic Medical Store',
+    industry: 'Healthcare',
+    logo: { src: '/work/flymeds/logo.png', width: 726, height: 160 },
     sector: 'Online pharmacy & healthcare e-commerce',
     year: '2026',
     title: 'A full-stack online pharmacy for affordable healthcare across India.',
@@ -496,5 +502,52 @@ export const serviceDetails: ServiceDetail[] = [
     ],
     outcomes: ['Qualified leads', 'Higher engagement', 'Sustainable channel growth'],
     visual: 'creative',
+  },
+];
+
+export type Client = {
+  name: string;
+  /** Industry shown in the collage's rotating "across" tile. */
+  sector: string;
+  logo: { src: string; width: number; height: number };
+  /** Website screenshot revealed on hover. */
+  preview: string;
+  /** Put a white card behind the logo on the dark theme (for dark-ink logos). */
+  plate?: boolean;
+};
+
+/**
+ * Brands we have worked with, shown around the lead project in the home-page
+ * collage. NOTE: the `preview` images are temporary placeholders — replace
+ * each with a screenshot of that brand's website (e.g. /work/clients/cibilon-site.webp).
+ */
+export const clients: Client[] = [
+  {
+    name: 'Cibilon',
+    sector: 'Fintech',
+    logo: { src: '/work/clients/cibilon.webp', width: 640, height: 636 },
+    preview: 'https://picsum.photos/seed/vrazeal-cibilon/1600/1000',
+    plate: true,
+  },
+  {
+    name: 'Uma Swagruha Foods',
+    sector: 'Food & retail',
+    logo: { src: '/work/clients/uma-swagruha-foods.webp', width: 634, height: 640 },
+    preview: 'https://picsum.photos/seed/vrazeal-uma/1600/1000',
+    plate: true,
+  },
+  {
+    name: 'The Creative Creeps',
+    sector: 'Creative studio',
+    logo: { src: '/work/clients/the-creative-creeps.webp', width: 577, height: 640 },
+    preview: 'https://picsum.photos/seed/vrazeal-tcc/1600/1000',
+    plate: true,
+  },
+  {
+    name: 'Be The Change',
+    sector: 'Social impact',
+    logo: { src: '/work/clients/be-the-change.webp', width: 384, height: 384 },
+    preview: 'https://picsum.photos/seed/vrazeal-btc/1600/1000',
+    plate: true,
   },
 ];
