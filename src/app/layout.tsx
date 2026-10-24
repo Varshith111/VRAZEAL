@@ -1,14 +1,16 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
-import { Inter } from 'next/font/google';
+import { Instrument_Serif, Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 
 import { Footer } from '@/components/layout/Footer';
 import { Navbar } from '@/components/layout/Navbar';
 import { SmoothScroll } from '@/components/motion/SmoothScroll';
 import { Cursor } from '@/components/ui/Cursor';
+import { PageTransition } from '@/components/ui/PageTransition';
 import { Preloader } from '@/components/ui/Preloader';
 import { site } from '@/lib/site';
+import { ThemeProvider, themeInitScript } from '@/lib/theme';
 
 const display = localFont({
   src: '../../public/fonts/GeneralSans-Variable.woff2',
@@ -25,6 +27,23 @@ const sans = Inter({
   display: 'swap',
   variable: '--font-sans',
   fallback: ['system-ui', 'sans-serif'],
+});
+
+const serif = Instrument_Serif({
+  subsets: ['latin'],
+  weight: '400',
+  style: ['italic', 'normal'],
+  display: 'swap',
+  variable: '--font-serif',
+  fallback: ['Georgia', 'serif'],
+});
+
+const mono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  display: 'swap',
+  variable: '--font-mono',
+  fallback: ['ui-monospace', 'monospace'],
 });
 
 export const metadata: Metadata = {
@@ -71,8 +90,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#FFFFFF',
-  colorScheme: 'light',
+  themeColor: '#050506',
+  colorScheme: 'dark light',
   width: 'device-width',
   initialScale: 1,
 };
@@ -99,22 +118,36 @@ const organizationSchema = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable}`}>
+    <html
+      lang="en"
+      data-theme="dark"
+      // The head script may switch the theme before React hydrates.
+      suppressHydrationWarning
+      className={`${display.variable} ${sans.variable} ${serif.variable} ${mono.variable}`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body>
         <a
-          href="#build"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[10001] focus:rounded-pill focus:bg-ink focus:px-5 focus:py-3 focus:text-sm focus:text-paper"
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[10001] focus:rounded-pill focus:bg-paper focus:px-5 focus:py-3 focus:text-sm focus:text-ink"
         >
           Skip to content
         </a>
 
-        <Preloader />
-        <Cursor />
-        <SmoothScroll>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-        </SmoothScroll>
+        <ThemeProvider>
+          <SmoothScroll>
+            <Preloader />
+            <PageTransition />
+            <Cursor />
+            <Navbar />
+            <main id="main">{children}</main>
+            <Footer />
+          </SmoothScroll>
+        </ThemeProvider>
+
+        <div aria-hidden className="grain" />
 
         <script
           type="application/ld+json"

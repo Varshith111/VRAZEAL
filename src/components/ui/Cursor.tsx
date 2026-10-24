@@ -1,18 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useMotionValue, useSpring } from 'framer-motion';
 
-type Mode = 'default' | 'link' | 'view' | 'drag';
-
-const RING = 44;
+type Mode = 'default' | 'link' | 'label' | 'hidden';
 
 /**
- * Custom pointer. Only mounts on devices with a fine pointer that have not
- * asked for reduced motion; touch and keyboard users keep the native cursor.
+ * Custom pointer for fine-pointer, full-motion devices only.
  *
- * Elements opt in via `data-cursor="link | view | drag"` and can override the
- * label with `data-cursor-label`.
+ * - default: a dot with a lagging ring
+ * - link:    the ring swells into an inverting lens (mix-blend: difference)
+ * - label:   a solid accent disc carrying a word, e.g. "View" or "Drag"
+ *            (opt in with data-cursor-label="View" on any element)
+ * - hidden:  over text inputs, where the native caret takes over
  */
 export function Cursor() {
   const [enabled, setEnabled] = useState(false);
@@ -20,13 +20,12 @@ export function Cursor() {
   const [label, setLabel] = useState<string | null>(null);
   const [visible, setVisible] = useState(false);
   const [pressed, setPressed] = useState(false);
+  const visibleRef = useRef(false);
 
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
-  const ringX = useSpring(x, { stiffness: 380, damping: 34, mass: 0.45 });
-  const ringY = useSpring(y, { stiffness: 380, damping: 34, mass: 0.45 });
-  const dotX = useSpring(x, { stiffness: 1100, damping: 50, mass: 0.2 });
-  const dotY = useSpring(y, { stiffness: 1100, damping: 50, mass: 0.2 });
+  const ringX = useSpring(x, { stiffness: 520, damping: 42, mass: 0.5 });
+  const ringY = useSpring(y, { stiffness: 520, damping: 42, mass: 0.5 });
 
   useEffect(() => {
     const fine = window.matchMedia('(pointer: fine)').matches;
@@ -36,37 +35,45 @@ export function Cursor() {
 
   useEffect(() => {
     if (!enabled) return;
-
     document.documentElement.classList.add('has-custom-cursor');
 
     const onMove = (event: PointerEvent) => {
       x.set(event.clientX);
       y.set(event.clientY);
-      if (!visible) setVisible(true);
+      if (!visibleRef.current) {
+        visibleRef.current = true;
+        setVisible(true);
+      }
     };
 
     const onOver = (event: PointerEvent) => {
       const target = event.target as HTMLElement | null;
-      const marked = target?.closest?.('[data-cursor]') as HTMLElement | null;
-      if (marked) {
-        setMode((marked.dataset.cursor as Mode) ?? 'link');
-        setLabel(marked.dataset.cursorLabel ?? null);
+      if (target?.closest?.('input, textarea, select, [contenteditable="true"]')) {
+        setMode('hidden');
+        setLabel(null);
         return;
       }
-      const interactive = target?.closest?.('a, button, input, textarea, select, [role="button"]');
+      const labelled = target?.closest?.('[data-cursor-label]') as HTMLElement | null;
+      if (labelled) {
+        setMode('label');
+        setLabel(labelled.dataset.cursorLabel ?? null);
+        return;
+      }
+      const interactive = target?.closest?.('a, button, [role="button"], [data-cursor], label');
       setMode(interactive ? 'link' : 'default');
       setLabel(null);
     };
 
-    const onLeave = () => setVisible(false);
-    const onEnter = () => setVisible(true);
+    const onLeave = () => {
+      visibleRef.current = false;
+      setVisible(false);
+    };
     const onDown = () => setPressed(true);
     const onUp = () => setPressed(false);
 
     window.addEventListener('pointermove', onMove, { passive: true });
     window.addEventListener('pointerover', onOver, { passive: true });
-    document.addEventListener('pointerleave', onLeave);
-    document.addEventListener('pointerenter', onEnter);
+    document.documentElement.addEventListener('pointerleave', onLeave);
     window.addEventListener('pointerdown', onDown);
     window.addEventListener('pointerup', onUp);
 
@@ -74,58 +81,82 @@ export function Cursor() {
       document.documentElement.classList.remove('has-custom-cursor');
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerover', onOver);
-      document.removeEventListener('pointerleave', onLeave);
-      document.removeEventListener('pointerenter', onEnter);
+      document.documentElement.removeEventListener('pointerleave', onLeave);
       window.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointerup', onUp);
     };
-  }, [enabled, visible, x, y]);
+  }, [enabled, x, y]);
 
   if (!enabled) return null;
 
-  const ringScale = mode === 'view' || mode === 'drag' ? 1.85 : mode === 'link' ? 1.5 : 1;
+  const size = mode === 'label' ? 92 : mode === 'link' ? 64 : 34;
+
+  const spring = { type: 'spring', stiffness: 380, damping: 30, mass: 0.6 } as const;
+  const centred = { translateX: '-50%', translateY: '-50%' } as const;
 
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 z-[9999] hidden md:block">
-      <motion.div
-        className="absolute left-0 top-0 rounded-full border border-ink/25 mix-blend-difference"
-        style={{
-          width: RING,
-          height: RING,
-          x: ringX,
-          y: ringY,
-          translateX: '-50%',
-          translateY: '-50%',
-          borderColor: mode === 'default' ? 'rgba(0,0,0,0.22)' : 'rgba(10,132,255,0.9)',
-        }}
-        animate={{
-          scale: pressed ? ringScale * 0.86 : ringScale,
-          opacity: visible ? 1 : 0,
-          backgroundColor: mode === 'view' || mode === 'drag' ? 'rgba(10,132,255,1)' : 'rgba(10,132,255,0)',
-        }}
-        transition={{ type: 'spring', stiffness: 340, damping: 26 }}
-      >
-        <AnimatePresence>
-          {label && (
-            <motion.span
-              key={label}
-              initial={{ opacity: 0, scale: 0.7 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.7 }}
-              className="absolute inset-0 flex items-center justify-center font-mono text-[0.4rem] uppercase tracking-[0.14em] text-paper"
-            >
-              {label}
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </motion.div>
+    <>
+      {/*
+       * Inverting layer. The blend mode sits on the fixed layer itself: a
+       * fixed element starts its own stacking context, so blending a child
+       * inside it would only blend against this empty layer, not the page.
+       * Here white "differences" against whatever is underneath — near-black
+       * on the light theme, white on the dark one, an inverted lens over text.
+       */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-[9999]" style={{ mixBlendMode: 'difference' }}>
+        <motion.div
+          className="absolute left-0 top-0 rounded-full border border-solid"
+          style={{ x: ringX, y: ringY, ...centred }}
+          animate={{
+            width: size,
+            height: size,
+            opacity: visible && (mode === 'default' || mode === 'link') ? 1 : 0,
+            scale: pressed ? 0.82 : 1,
+            backgroundColor: mode === 'link' ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0)',
+            borderColor: mode === 'default' ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0)',
+          }}
+          transition={spring}
+        />
 
-      <motion.div
-        className="absolute left-0 top-0 h-1.5 w-1.5 rounded-full bg-ink"
-        style={{ x: dotX, y: dotY, translateX: '-50%', translateY: '-50%' }}
-        animate={{ opacity: visible && mode === 'default' ? 1 : 0, scale: pressed ? 0.6 : 1 }}
-        transition={{ duration: 0.2 }}
-      />
-    </div>
+        {/* Precise dot — always where the pointer actually is. */}
+        <motion.div
+          className="absolute left-0 top-0 h-[6px] w-[6px] rounded-full bg-white"
+          style={{ x, y, ...centred }}
+          animate={{ opacity: visible && mode === 'default' ? 1 : 0 }}
+          transition={{ duration: 0.15 }}
+        />
+      </div>
+
+      {/* Label disc — solid brand blue, so it lives outside the blend. */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-[9999]">
+        <motion.div
+          className="absolute left-0 top-0 flex items-center justify-center rounded-full bg-accent shadow-[0_10px_40px_-10px_rgba(10,132,255,0.8)]"
+          style={{ x: ringX, y: ringY, ...centred }}
+          initial={false}
+          animate={{
+            width: size,
+            height: size,
+            opacity: visible && mode === 'label' ? 1 : 0,
+            scale: mode === 'label' ? (pressed ? 0.82 : 1) : 0.4,
+          }}
+          transition={spring}
+        >
+          <AnimatePresence>
+            {mode === 'label' && label && (
+              <motion.span
+                key={label}
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.6 }}
+                transition={{ duration: 0.25 }}
+                className="font-mono text-[0.625rem] uppercase tracking-[0.14em] text-white"
+              >
+                {label}
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+    </>
   );
 }

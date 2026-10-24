@@ -9,6 +9,8 @@ type Props = {
   suffix?: string;
   className?: string;
   duration?: number;
+  /** Group thousands, e.g. 5170 → 5,170. */
+  grouped?: boolean;
 };
 
 /**
@@ -16,7 +18,7 @@ type Props = {
  * and writes to state only when the rounded integer changes, so a 0→100 count
  * costs 100 renders rather than one per frame.
  */
-export function Counter({ value, prefix = '', suffix = '', className, duration = 1.9 }: Props) {
+export function Counter({ value, prefix = '', suffix = '', className, duration = 1.9, grouped = false }: Props) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: '-15% 0px' });
   const reduced = useReducedMotion();
@@ -49,7 +51,7 @@ export function Counter({ value, prefix = '', suffix = '', className, duration =
     <span ref={ref} className={className}>
       <span className="tabular-nums">
         {prefix}
-        {display}
+        {grouped ? display.toLocaleString('en-US') : display}
       </span>
       {suffix}
     </span>

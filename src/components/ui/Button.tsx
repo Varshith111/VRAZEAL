@@ -4,38 +4,33 @@ import { ComponentPropsWithoutRef, ElementType, ReactNode } from 'react';
 import { Magnetic } from '@/components/motion/Magnetic';
 import { cn } from '@/lib/utils';
 
-type Variant = 'primary' | 'outline' | 'invert' | 'ghost';
+type Variant = 'primary' | 'light' | 'ghost' | 'dark';
 type Size = 'sm' | 'md' | 'lg';
 
 const base =
-  'group/btn relative inline-flex select-none items-center justify-center gap-3 overflow-hidden rounded-pill font-medium tracking-[-0.01em] transition-colors duration-500 ease-expo';
+  'group/btn relative isolate inline-flex select-none items-center justify-center gap-3 overflow-hidden rounded-pill font-medium tracking-[-0.01em] transition-[color,border-color,box-shadow] duration-500 ease-expo';
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-ink text-paper hover:text-paper',
-  outline: 'border border-line bg-transparent text-ink hover:border-ink/25',
-  invert: 'bg-paper text-ink',
-  ghost: 'bg-transparent text-ink hover:bg-black/[0.04]',
+  primary:
+    'bg-accent text-white shadow-[0_0_0_1px_rgba(10,132,255,0.6),0_10px_40px_-10px_rgba(10,132,255,0.65)] hover:text-ink hover:shadow-[0_0_0_1px_rgb(var(--c-fg)),0_10px_50px_-10px_rgb(var(--c-fg)/0.35)]',
+  // Inverse of the theme: a white button on dark, a black one on light.
+  light: 'bg-paper text-ink hover:text-white',
+  ghost: 'border border-paper/15 bg-paper/[0.02] text-paper hover:border-paper hover:text-ink',
+  dark: 'bg-ink text-paper hover:text-white',
 };
 
 /** The wash that sweeps up from the bottom edge on hover. */
 const fills: Record<Variant, string> = {
-  primary: 'bg-accent',
-  outline: 'bg-ink',
-  invert: 'bg-accent',
-  ghost: 'bg-transparent',
-};
-
-const hoverText: Record<Variant, string> = {
-  primary: '',
-  outline: 'group-hover/btn:text-paper',
-  invert: 'group-hover/btn:text-paper',
-  ghost: '',
+  primary: 'bg-paper',
+  light: 'bg-accent',
+  ghost: 'bg-paper',
+  dark: 'bg-accent',
 };
 
 const sizes: Record<Size, string> = {
-  sm: 'h-10 px-5 text-[0.8125rem]',
-  md: 'h-12 px-6 text-[0.9375rem]',
-  lg: 'h-[3.625rem] px-8 text-[0.9375rem]',
+  sm: 'h-10 pl-5 pr-4 text-[0.8125rem]',
+  md: 'h-12 pl-6 pr-5 text-[0.9375rem]',
+  lg: 'h-[3.75rem] pl-8 pr-6 text-[1rem]',
 };
 
 type Props<T extends ElementType> = {
@@ -45,9 +40,15 @@ type Props<T extends ElementType> = {
   children: ReactNode;
   className?: string;
   magnetic?: boolean;
+  /** Pass `null` to drop the arrow. */
   icon?: ReactNode;
 } & Omit<ComponentPropsWithoutRef<T>, 'as' | 'children' | 'className'>;
 
+/**
+ * The one button. A fill sweeps up from below on hover, the label rolls to a
+ * duplicate of itself, and the arrow turns from diagonal to straight —
+ * three small movements that read as one.
+ */
 export function Button<T extends ElementType = 'button'>({
   as,
   variant = 'primary',
@@ -62,26 +63,27 @@ export function Button<T extends ElementType = 'button'>({
 
   const button = (
     <Tag className={cn(base, variants[variant], sizes[size], className)} {...rest}>
-      {/* Fill sweeps up from below and stays; leaving reverses it. */}
       <span
         aria-hidden
         className={cn(
-          'absolute inset-0 z-0 translate-y-full rounded-pill transition-transform duration-[650ms] ease-expo group-hover/btn:translate-y-0',
+          'absolute inset-0 -z-10 translate-y-[101%] rounded-[inherit] transition-transform duration-[650ms] ease-expo group-hover/btn:translate-y-0',
           fills[variant],
         )}
       />
-      <span className={cn('relative z-10 transition-colors duration-500 ease-expo', hoverText[variant])}>
-        {children}
-      </span>
-      {icon !== null && (
+      <span className="relative block overflow-hidden">
+        <span className="block transition-transform duration-[650ms] ease-expo group-hover/btn:-translate-y-full">
+          {children}
+        </span>
         <span
           aria-hidden
-          className={cn(
-            'relative z-10 transition-all duration-500 ease-expo group-hover/btn:translate-x-1',
-            hoverText[variant],
-          )}
+          className="absolute inset-0 block translate-y-full transition-transform duration-[650ms] ease-expo group-hover/btn:translate-y-0"
         >
-          {icon ?? <ArrowRight />}
+          {children}
+        </span>
+      </span>
+      {icon !== null && (
+        <span aria-hidden className="relative flex h-5 w-5 items-center justify-center">
+          {icon ?? <ArrowRight className="-rotate-45 transition-transform duration-[650ms] ease-expo group-hover/btn:rotate-0" />}
         </span>
       )}
     </Tag>
@@ -93,21 +95,8 @@ export function Button<T extends ElementType = 'button'>({
 
 export function ArrowRight({ className }: { className?: string }) {
   return (
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 16 16"
-      fill="none"
-      aria-hidden
-      className={className}
-    >
-      <path
-        d="M3 8h10M9 4l4 4-4 4"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="square"
-        strokeLinejoin="miter"
-      />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden className={className}>
+      <path d="M2.5 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

@@ -1,220 +1,57 @@
 'use client';
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
+import { AutomationSweep } from '@/components/ai/AutomationSweep';
+import { SolutionExplorer } from '@/components/ai/SolutionExplorer';
+import { ClosingCta } from '@/components/ui/ClosingCta';
 import { PageHero } from '@/components/ui/PageHero';
-import { Reveal, RevealGroup, RevealItem } from '@/components/motion/Reveal';
-
-const solutions = [
-  {
-    id: 'support',
-    number: '01',
-    title: 'AI Customer Support',
-    problem: 'Your support team spends most of their time answering the same questions.',
-    solution: 'An AI agent trained on your products, policies, and FAQs — handles routine queries instantly, escalates complex ones to your team.',
-    benefit: 'Faster response times. Lower support costs. Happier customers.',
-  },
-  {
-    id: 'leads',
-    number: '02',
-    title: 'AI Lead Generation',
-    problem: 'Leads come in but qualification takes too long and too many fall through the cracks.',
-    solution: 'Automated lead capture, qualification, and routing — the right leads reach the right person at the right time.',
-    benefit: 'More qualified pipeline. Less manual follow-up. Higher close rates.',
-  },
-  {
-    id: 'sales',
-    number: '03',
-    title: 'AI Sales Automation',
-    problem: 'Your sales team is spending time on admin instead of selling.',
-    solution: 'Automated follow-up sequences, proposal generation, and CRM updates — so your team focuses on conversations, not data entry.',
-    benefit: 'More selling time. Consistent follow-up. Shorter sales cycles.',
-  },
-  {
-    id: 'whatsapp',
-    number: '04',
-    title: 'AI WhatsApp Automation',
-    problem: 'Customer enquiries come in on WhatsApp at all hours and responses are inconsistent.',
-    solution: 'An AI-powered WhatsApp agent that handles enquiries, books appointments, and qualifies leads — 24/7.',
-    benefit: 'Always-on customer engagement. Consistent responses. More bookings.',
-  },
-  {
-    id: 'crm',
-    number: '05',
-    title: 'AI CRM Automation',
-    problem: 'Your CRM is full of stale data because updating it manually never happens consistently.',
-    solution: 'Automated data enrichment, activity logging, and pipeline updates — your CRM stays accurate without anyone having to maintain it.',
-    benefit: 'Clean data. Better forecasting. Less admin overhead.',
-  },
-  {
-    id: 'documents',
-    number: '06',
-    title: 'AI Document Processing',
-    problem: 'Your team spends hours extracting information from invoices, contracts, and forms.',
-    solution: 'Intelligent document pipelines that extract, classify, and route information automatically — with human review where it matters.',
-    benefit: 'Hours saved per week. Fewer errors. Faster processing.',
-  },
-  {
-    id: 'email',
-    number: '07',
-    title: 'AI Email Automation',
-    problem: 'Email campaigns are generic and follow-up sequences are inconsistent.',
-    solution: 'Personalised email workflows triggered by behaviour — the right message reaches the right person at the right moment.',
-    benefit: 'Higher open rates. More conversions. Less manual work.',
-  },
-  {
-    id: 'workflow',
-    number: '08',
-    title: 'AI Workflow Automation',
-    problem: 'Your team is held together by manual handoffs, spreadsheets, and Slack messages.',
-    solution: 'End-to-end workflow automation that connects your tools, eliminates manual steps, and keeps everything moving without human intervention.',
-    benefit: 'Faster operations. Fewer errors. Teams focused on what matters.',
-  },
-];
-
-const automatable = [
-  { area: 'Customer enquiries', example: 'Answered instantly by AI, 24/7' },
-  { area: 'Lead qualification', example: 'Scored and routed automatically' },
-  { area: 'Appointment booking', example: 'Booked via WhatsApp or web' },
-  { area: 'Invoice processing', example: 'Extracted and filed automatically' },
-  { area: 'Follow-up sequences', example: 'Triggered by behaviour, not calendar' },
-  { area: 'CRM data entry', example: 'Updated from calls and emails' },
-  { area: 'Report generation', example: 'Compiled and sent on schedule' },
-  { area: 'Onboarding workflows', example: 'Triggered on signup, no manual steps' },
-];
+import { StepsLine } from '@/components/ui/StepsLine';
+import { aiDelivery } from '@/lib/ai';
 
 export function AiSolutionsPage() {
   return (
     <>
       <PageHero
-        eyebrow="AI Solutions"
-        title="Automate the repetitive. Focus on what matters."
-        subtitle="We help businesses replace manual, time-consuming workflows with AI-powered systems that run reliably — without adding headcount."
+        label="AI Solutions"
+        focus={[0.5, 0.85]}
+        title={[
+          'Automate the',
+          <>
+            <span className="accent-serif">repetitive</span>
+            <span className="text-accent">.</span>
+          </>,
+        ]}
+        subtitle="We replace manual, time-consuming workflows with AI-powered systems that run reliably — so your team can focus on the work that actually needs a person."
+        meta={[
+          { label: 'Solutions', value: '08' },
+          { label: 'Typical build', value: '6–10 weeks' },
+          { label: 'Approach', value: 'Human-in-the-loop' },
+        ]}
       />
-
-      {/* Solutions list */}
-      <section className="bg-surface pb-section">
-        <div className="shell">
-          {solutions.map((solution, index) => (
-            <div key={solution.id} id={solution.id} className="scroll-mt-28">
-              <div className="h-px w-full bg-page-line" />
-              <div className="grid grid-cols-12 gap-y-8 py-12 lg:gap-x-16">
-                {/* Title col */}
-                <div className="col-span-12 lg:col-span-3">
-                  <Reveal>
-                    <span className="font-mono text-label text-page-muted">{solution.number}</span>
-                    <h2 className="mt-3 text-[1.25rem] font-medium tracking-[-0.025em] text-page-ink">
-                      {solution.title}
-                    </h2>
-                  </Reveal>
-                </div>
-
-                {/* Three-column cards */}
-                <div className="col-span-12 lg:col-span-8 lg:col-start-5">
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    {/* Problem */}
-                    <Reveal delay={0.05}>
-                      <div className="bg-paper rounded-card border border-page-line p-6 h-full">
-                        <p className="font-mono text-label uppercase tracking-[0.16em] text-page-muted mb-4">
-                          Problem
-                        </p>
-                        <p className="text-[0.9375rem] leading-[1.65] text-page-muted">
-                          {solution.problem}
-                        </p>
-                      </div>
-                    </Reveal>
-
-                    {/* Solution */}
-                    <Reveal delay={0.1}>
-                      <div className="bg-paper rounded-card border border-page-line p-6 h-full">
-                        <p className="font-mono text-label uppercase tracking-[0.16em] text-page-muted mb-4">
-                          AI Solution
-                        </p>
-                        <p className="text-[0.9375rem] leading-[1.65] text-page-muted">
-                          {solution.solution}
-                        </p>
-                      </div>
-                    </Reveal>
-
-                    {/* Benefit — only card with accent treatment */}
-                    <Reveal delay={0.15}>
-                      <div className="bg-paper rounded-card border border-page-line p-6 h-full">
-                        <p className="font-mono text-label uppercase tracking-[0.16em] text-page-accent mb-4">
-                          Outcome
-                        </p>
-                        <p className="text-[0.9375rem] leading-[1.65] text-page-ink font-medium">
-                          {solution.benefit}
-                        </p>
-                      </div>
-                    </Reveal>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-          <div className="h-px w-full bg-page-line" />
-        </div>
-      </section>
-
-      {/* Find what you can automate */}
-      <section className="py-section bg-ink text-paper">
-        <div className="shell">
-          <div className="h-px w-full bg-paper/10" />
-          <div className="pt-14">
-            <Reveal>
-              <h2 className="text-h2 font-medium max-w-[20ch]">
-                Find what you can automate.
-              </h2>
-              <p className="mt-5 max-w-[52ch] text-lead text-paper/55">
-                Most businesses have more automatable work than they realise. Here are the areas we
-                most commonly address.
-              </p>
-            </Reveal>
-
-            <RevealGroup
-              className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-paper/10"
-              stagger={0.04}
-            >
-              {automatable.map((item) => (
-                <RevealItem key={item.area}>
-                  <div className="border-b border-r border-paper/10 p-7">
-                    <p className="text-[1rem] font-medium text-paper">{item.area}</p>
-                    <p className="mt-2 text-[0.875rem] text-paper/45 leading-[1.6]">{item.example}</p>
-                  </div>
-                </RevealItem>
-              ))}
-            </RevealGroup>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-section bg-surface">
-        <div className="shell">
-          <div className="h-px w-full bg-page-line" />
-          <div className="pt-14 flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
-            <Reveal>
-              <h2 className="text-h2 font-medium text-page-ink max-w-[18ch]">
-                Ready to automate your business?
-              </h2>
-              <p className="mt-5 max-w-[44ch] text-lead text-page-muted">
-                Tell us which workflows are slowing your team down and we will show you what is
-                possible.
-              </p>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <div className="flex flex-wrap gap-4">
-                <Button as={Link} href="/contact" size="lg">
-                  Talk to VRAZEAL
-                </Button>
-                <Button as={Link} href="/services" variant="outline" size="lg">
-                  All services
-                </Button>
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
+      <SolutionExplorer />
+      <AutomationSweep />
+      <StepsLine
+        index="03"
+        label="How AI projects run"
+        title={[
+          'Evaluated, not',
+          <>
+            <span className="accent-serif">guessed</span>
+            <span className="text-accent">.</span>
+          </>,
+        ]}
+        aside="AI that cannot prove it is accurate is a liability. Every system we ship is measured against real cases before it touches a customer."
+        steps={aiDelivery}
+      />
+      <ClosingCta
+        title={[
+          'Find out what',
+          <>
+            you can <span className="accent-serif">automate</span>
+            <span className="text-accent">.</span>
+          </>,
+        ]}
+        eyebrow="Talk to an engineer"
+      />
     </>
   );
 }

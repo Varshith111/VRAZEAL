@@ -56,25 +56,25 @@ function Websites() {
       <div className="flex h-full flex-col">
         <div className="flex min-h-0 flex-1 flex-col gap-2 p-4">
           <motion.div
-            className="flex shrink-0 items-center gap-2 rounded-lg border border-line bg-paper px-3 py-2.5"
+            className="flex shrink-0 items-center gap-2 rounded-lg border border-line bg-white px-3 py-2.5"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease }}
           >
-            <span className="h-1.5 w-7 rounded-full bg-ink" />
+            <span className="h-1.5 w-7 rounded-full bg-black" />
             <span className="ml-auto h-1.5 w-5 rounded-full bg-[#E8EAEE]" />
             <span className="h-1.5 w-7 rounded-full bg-[#E8EAEE]" />
             <span className="h-1.5 w-4 rounded-full bg-[#E8EAEE]" />
-            <span className="h-3.5 w-9 rounded-md bg-ink" />
+            <span className="h-3.5 w-9 rounded-md bg-black" />
           </motion.div>
 
-          <div className="shrink-0 rounded-lg border border-line bg-paper p-4">
+          <div className="shrink-0 rounded-lg border border-line bg-white p-4">
             {[96, 78, 54].map((width, index) => (
               <motion.span
                 key={width}
                 className={cn(
                   'mt-1.5 block h-2.5 origin-left rounded-sm first:mt-0',
-                  index === 2 ? 'bg-[#E4E6EA]' : 'bg-ink',
+                  index === 2 ? 'bg-[#E4E6EA]' : 'bg-black',
                 )}
                 style={{ width: `${width}%` }}
                 initial={{ scaleX: 0 }}
@@ -97,7 +97,7 @@ function Websites() {
             {[0, 1, 2].map((index) => (
               <motion.div
                 key={index}
-                className="flex min-h-0 flex-col justify-between rounded-lg border border-line bg-paper p-2.5"
+                className="flex min-h-0 flex-col justify-between rounded-lg border border-line bg-white p-2.5"
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.65, delay: 0.55 + index * 0.08, ease }}
@@ -114,7 +114,7 @@ function Websites() {
 
         <div className="grid shrink-0 grid-cols-3 gap-px border-t border-line bg-line">
           {metrics.map((metric, index) => (
-            <div key={metric.label} className="bg-paper px-3 py-2.5">
+            <div key={metric.label} className="bg-white px-3 py-2.5">
               <p className={cn(mono, 'truncate text-muted')}>{metric.label}</p>
               <div className="mt-2 flex items-center gap-2">
                 <span className="font-display text-[0.9375rem] font-medium leading-none tabular-nums">
@@ -124,7 +124,7 @@ function Websites() {
                   <motion.span
                     className={cn(
                       'block h-1 rounded-full',
-                      index === 0 ? 'bg-accent' : 'bg-ink',
+                      index === 0 ? 'bg-accent' : 'bg-black',
                     )}
                     initial={{ width: 0 }}
                     animate={{ width: `${metric.value}%` }}
@@ -160,7 +160,7 @@ function Crm() {
           {columns.map((column, columnIndex) => (
             <motion.div
               key={column.name}
-              className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-line bg-paper p-2"
+              className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-line bg-white p-2"
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: columnIndex * 0.07, ease }}
@@ -329,7 +329,7 @@ function Software() {
             >
               <span className="h-1 w-1 shrink-0 rounded-full bg-accent" />
               <span className={cn(mono, 'shrink-0 text-muted/70')}>{time}</span>
-              <span className="truncate font-mono text-[0.5rem] text-ink">{event}</span>
+              <span className="truncate font-mono text-[0.5rem] text-black">{event}</span>
             </motion.div>
           ))}
           <motion.div
@@ -361,11 +361,11 @@ function Ai() {
   return (
     <Screen label="retrieval · contracts.idx" status="4,120 chunks">
       <div className="flex h-full flex-col gap-2.5 p-4">
-        <div className="flex shrink-0 items-center gap-2 rounded-lg border border-line bg-paper px-3 py-2.5">
+        <div className="flex shrink-0 items-center gap-2 rounded-lg border border-line bg-white px-3 py-2.5">
           <span className={cn(mono, 'shrink-0 text-muted')}>Ask</span>
           <span className="flex min-w-0 flex-1 items-center overflow-hidden">
             <motion.span
-              className="whitespace-nowrap text-[0.6875rem] tracking-[-0.005em] text-ink"
+              className="whitespace-nowrap text-[0.6875rem] tracking-[-0.005em] text-black"
               initial={{ clipPath: 'inset(0 100% 0 0)' }}
               animate={{ clipPath: 'inset(0 0% 0 0)' }}
               transition={{ duration: 1.1, delay: 0.2, ease: 'linear' }}
@@ -382,7 +382,7 @@ function Ai() {
               key={chunk.label}
               className={cn(
                 'flex items-center gap-2 rounded-md border px-2.5 py-2',
-                index === 0 ? 'border-accent/30 bg-accent-soft' : 'border-line bg-paper',
+                index === 0 ? 'border-accent/30 bg-accent-soft' : 'border-line bg-white',
               )}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -391,14 +391,14 @@ function Ai() {
               <span
                 className={cn(
                   'truncate font-mono text-[0.5625rem]',
-                  index === 0 ? 'text-ink' : 'text-muted',
+                  index === 0 ? 'text-black' : 'text-muted',
                 )}
               >
                 {chunk.label}
               </span>
               <span className="ml-auto h-1 w-10 shrink-0 rounded-full bg-[#EDEFF2] sm:w-16">
                 <motion.span
-                  className={cn('block h-1 rounded-full', index === 0 ? 'bg-accent' : 'bg-ink/30')}
+                  className={cn('block h-1 rounded-full', index === 0 ? 'bg-accent' : 'bg-black/30')}
                   initial={{ width: 0 }}
                   animate={{ width: `${chunk.score}%` }}
                   transition={{ duration: 0.9, delay: 1.3 + index * 0.1, ease }}
@@ -411,7 +411,7 @@ function Ai() {
           ))}
         </div>
 
-        <div className="mt-auto min-h-0 rounded-lg border border-line bg-paper p-3">
+        <div className="mt-auto min-h-0 rounded-lg border border-line bg-white p-3">
           <p className={cn(mono, 'text-muted')}>Answer</p>
           <div className="mt-2.5 space-y-1.5">
             {[100, 92, 64].map((width, index) => (
@@ -452,7 +452,7 @@ function Brand() {
   return (
     <Screen label="identity kit · v2.1" status="12 tokens">
       <div className="grid h-full grid-cols-2 grid-rows-[1.25fr_1fr] gap-2 p-4">
-        <div className="col-span-2 flex items-center justify-center overflow-hidden rounded-lg border border-line bg-paper">
+        <div className="col-span-2 flex items-center justify-center overflow-hidden rounded-lg border border-line bg-white">
           <motion.span
             className="font-display text-[clamp(1.25rem,3.4vw,2.25rem)] font-medium leading-none"
             initial={{ letterSpacing: '0.42em', opacity: 0 }}
@@ -463,7 +463,7 @@ function Brand() {
           </motion.span>
         </div>
 
-        <div className="relative overflow-hidden rounded-lg border border-line bg-paper">
+        <div className="relative overflow-hidden rounded-lg border border-line bg-white">
           <div
             className="grid-lines absolute inset-0 opacity-70"
             style={{ backgroundSize: '18px 18px' }}
@@ -494,12 +494,12 @@ function Brand() {
           </div>
         </div>
 
-        <div className="flex min-h-0 flex-col justify-between rounded-lg border border-line bg-paper p-3">
+        <div className="flex min-h-0 flex-col justify-between rounded-lg border border-line bg-white p-3">
           <div className="space-y-1">
             {['Display', 'Heading', 'Body', 'Label'].map((step, index) => (
               <motion.p
                 key={step}
-                className="font-display leading-none tracking-[-0.03em] text-ink"
+                className="font-display leading-none tracking-[-0.03em] text-black"
                 style={{ fontSize: `${[17, 13.5, 11, 9][index]}px` }}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1 - index * 0.16, x: 0 }}
@@ -556,25 +556,25 @@ function Creative() {
             animate={{ scale: 1 }}
             transition={{ duration: 6, ease: 'linear', repeat: reduced ? 0 : Infinity, repeatType: 'reverse' }}
           >
-            <div className="absolute left-1/2 top-1/2 h-[42%] w-[52%] -translate-x-1/2 -translate-y-1/2 rounded-md border border-ink/10 bg-paper" />
+            <div className="absolute left-1/2 top-1/2 h-[42%] w-[52%] -translate-x-1/2 -translate-y-1/2 rounded-md border border-black/10 bg-white" />
             <div className="absolute left-[16%] top-[22%] h-10 w-10 rounded-full bg-accent/15" />
-            <div className="absolute bottom-[18%] right-[14%] h-8 w-16 rounded-md bg-ink/5" />
+            <div className="absolute bottom-[18%] right-[14%] h-8 w-16 rounded-md bg-black/5" />
           </motion.div>
 
           <div className="absolute inset-x-3 bottom-2 flex items-center justify-between">
-            <span className={cn(mono, 'rounded-sm bg-paper/80 px-1.5 py-1 text-muted')}>4K · 24p</span>
-            <span className={cn(mono, 'rounded-sm bg-paper/80 px-1.5 py-1 text-muted')}>Grade v3</span>
+            <span className={cn(mono, 'rounded-sm bg-white/80 px-1.5 py-1 text-muted')}>4K · 24p</span>
+            <span className={cn(mono, 'rounded-sm bg-white/80 px-1.5 py-1 text-muted')}>Grade v3</span>
           </div>
         </motion.div>
 
-        <div className="relative shrink-0 space-y-1.5 overflow-hidden rounded-lg border border-line bg-paper p-2">
+        <div className="relative shrink-0 space-y-1.5 overflow-hidden rounded-lg border border-line bg-white p-2">
           <div className="flex gap-1">
             {Array.from({ length: 14 }).map((_, index) => (
               <motion.span
                 key={index}
                 className={cn(
                   'h-5 flex-1 rounded-[3px]',
-                  index === 6 || index === 7 ? 'bg-ink/20' : 'bg-[#EDEFF2]',
+                  index === 6 || index === 7 ? 'bg-black/20' : 'bg-[#EDEFF2]',
                 )}
                 initial={{ opacity: 0, scaleY: 0.4 }}
                 animate={{ opacity: 1, scaleY: 1 }}

@@ -2,8 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, useReducedMotion } from 'framer-motion';
-import { RevealGroup, RevealItem } from '@/components/motion/Reveal';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { useLenis } from '@/components/motion/SmoothScroll';
 import { nav, services, site } from '@/lib/site';
 
 const legal = [
@@ -11,125 +12,152 @@ const legal = [
   { label: 'Terms', href: '/terms' },
 ];
 
-/** 44px touch rows on phones, back to the tight desktop rhythm above lg. */
-const linkClass =
-  'flex min-h-[44px] items-center text-[0.9375rem] text-paper/70 transition-colors duration-300 hover:text-paper lg:block lg:min-h-0';
+/** Studio clock. Rendered client-side only so server and client never disagree. */
+function StudioTime() {
+  const [time, setTime] = useState<string | null>(null);
+
+  useEffect(() => {
+    const format = () =>
+      new Intl.DateTimeFormat('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZone: 'Asia/Kolkata',
+      }).format(new Date());
+    setTime(format());
+    const id = window.setInterval(() => setTime(format()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return <span className="tabular-nums">{time ?? '--:--:--'}</span>;
+}
 
 export function Footer() {
   const reduced = useReducedMotion();
+  const lenis = useLenis();
+  const ref = useRef<HTMLElement>(null);
   const year = new Date().getFullYear();
 
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] });
+  const markY = useTransform(scrollYProgress, [0.35, 1], ['45%', '0%']);
+  const markOpacity = useTransform(scrollYProgress, [0.35, 0.9], [0, 1]);
+
+  const toTop = () => {
+    if (lenis) lenis.scrollTo(0, { duration: 2 });
+    else window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const columns = [
+    { title: 'Navigate', links: [...nav, { label: 'Contact', href: '/contact' }] },
+    { title: 'Services', links: services },
+  ];
+
   return (
-    <footer className="relative overflow-hidden bg-ink pb-8 pt-section text-paper">
-      <div className="shell">
-        <div className="h-px w-full bg-paper/15" />
-
-        <RevealGroup className="grid grid-cols-12 gap-y-12 pt-14 sm:gap-x-8" stagger={0.08}>
-          <RevealItem y={20} className="col-span-12 lg:col-span-4">
-            <Image
-              src="/logo-lockup.png"
-              alt={`${site.name} — ${site.tagline}`}
-              width={1600}
-              height={340}
-              className="h-auto w-[13rem] invert"
-            />
-            <p className="mt-7 max-w-[34ch] text-[0.9375rem] leading-[1.6] text-paper/50">
-              A creative and technology agency building software, systems, and brands for businesses
-              that intend to grow into them.
+    <footer ref={ref} className="relative overflow-hidden border-t border-hair bg-void pt-24 text-paper">
+      <div className="shell relative">
+        <div className="grid grid-cols-12 gap-y-14 sm:gap-x-8">
+          <div className="col-span-12 lg:col-span-4">
+            <p className="max-w-[30ch] font-display text-[1.625rem] font-medium leading-[1.15] tracking-[-0.03em]">
+              Websites, software and AI systems — designed and engineered by one team.
             </p>
-          </RevealItem>
+            <a
+              href={`mailto:${site.email}`}
+              className="link-underline mt-8 inline-block font-display text-[1.25rem] tracking-[-0.02em] text-accent-bright"
+            >
+              {site.email}
+            </a>
+          </div>
 
-          <RevealItem y={20} className="col-span-6 sm:col-span-4 lg:col-span-2 lg:col-start-7">
-            <nav aria-label="Footer navigation">
-              <p className="eyebrow text-paper/40">Navigate</p>
-            {/* Touch rows below lg; the tighter desktop rhythm above it. The
-                underline lives on an inner span so padding cannot drag it away
-                from the baseline. */}
-              <ul className="mt-4 space-y-1 lg:mt-5 lg:space-y-3">
-                {nav.map((item) => (
+          {columns.map((column) => (
+            <nav key={column.title} aria-label={column.title} className="col-span-6 sm:col-span-4 lg:col-span-2 lg:col-start-auto">
+              <p className="eyebrow">{column.title}</p>
+              <ul className="mt-6 space-y-3">
+                {column.links.map((item) => (
                   <li key={item.href}>
-                    <Link href={item.href} className={linkClass}>
-                      <span className="link-underline">{item.label}</span>
+                    <Link
+                      href={item.href}
+                      className="group inline-flex items-center gap-2 text-[0.9375rem] text-smoke transition-colors duration-300 hover:text-paper"
+                    >
+                      <span className="h-px w-0 bg-accent transition-all duration-500 ease-expo group-hover:w-3" />
+                      {item.label}
                     </Link>
                   </li>
                 ))}
               </ul>
             </nav>
-          </RevealItem>
+          ))}
 
-          <RevealItem y={20} className="col-span-6 sm:col-span-4 lg:col-span-2">
-            <p className="eyebrow text-paper/40">Services</p>
-            <ul className="mt-4 space-y-1 lg:mt-5 lg:space-y-3">
-              {services.map((service) => (
-                <li key={service.href}>
-                  <Link href={service.href} className={linkClass}>
-                    <span className="link-underline">{service.label}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </RevealItem>
-
-          <RevealItem y={20} className="col-span-12 sm:col-span-4 lg:col-span-2">
-            <p className="eyebrow text-paper/40">Connect</p>
-            <ul className="mt-4 space-y-1 lg:mt-5 lg:space-y-3">
-              <li>
-                <a href={`mailto:${site.email}`} className={linkClass}>
-                  <span className="link-underline">{site.email}</span>
-                </a>
-              </li>
+          <div className="col-span-12 sm:col-span-4 lg:col-span-3 lg:col-start-10">
+            <p className="eyebrow">Connect</p>
+            <ul className="mt-6 space-y-3">
               {site.social.map((item) => (
                 <li key={item.label}>
-                  <a href={item.href} target="_blank" rel="noreferrer" className={linkClass}>
-                    <span className="link-underline">{item.label}</span>
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group inline-flex items-center gap-2 text-[0.9375rem] text-smoke transition-colors duration-300 hover:text-paper"
+                  >
+                    {item.label}
+                    <span aria-hidden className="text-ash transition-transform duration-500 ease-expo group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
+                      ↗
+                    </span>
                   </a>
                 </li>
               ))}
             </ul>
-          </RevealItem>
-        </RevealGroup>
-
-        <div className="mask-fade-x mt-20 overflow-hidden">
-          <motion.div
-            initial={reduced ? undefined : { y: '22%', opacity: 0 }}
-            whileInView={reduced ? undefined : { y: '0%', opacity: 1 }}
-            viewport={{ once: true, margin: '-10%' }}
-            transition={{ duration: 1.3, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <Image
-              src="/logo-wordmark.png"
-              alt=""
-              aria-hidden
-              width={1200}
-              height={172}
-              className="h-auto w-full opacity-[0.14] invert"
-            />
-          </motion.div>
+            <div className="mt-10 rounded-2xl border border-hair bg-paper/[0.02] p-5">
+              <p className="eyebrow flex items-center gap-2">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-70" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
+                </span>
+                Studio time · IST
+              </p>
+              <p className="mt-3 font-display text-[2rem] font-medium leading-none tracking-[-0.04em]">
+                <StudioTime />
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="mt-12 flex flex-wrap items-center justify-between gap-x-8 gap-y-4 border-t border-paper/15 pt-7">
-          <p className="eyebrow text-paper/40">
+        <div className="mt-20 flex flex-wrap items-center justify-between gap-x-8 gap-y-4 border-t border-hair pt-7">
+          <p className="eyebrow">
             © {year} {site.name}. All rights reserved.
           </p>
-          {/* -my-3 keeps the touch targets from adding visible space. */}
-          <div className="-my-3 flex flex-wrap items-center gap-x-7 lg:my-0">
+          <div className="flex flex-wrap items-center gap-x-7 gap-y-2">
             {legal.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="eyebrow flex min-h-[44px] items-center text-paper/40 transition-colors duration-300 hover:text-paper lg:min-h-0"
-              >
+              <Link key={item.href} href={item.href} className="eyebrow transition-colors duration-300 hover:text-paper">
                 {item.label}
               </Link>
             ))}
-            <a
-              href="#top"
-              className="eyebrow flex min-h-[44px] items-center text-paper/40 transition-colors duration-300 hover:text-paper lg:min-h-0"
-            >
-              Back to top ↑
-            </a>
+            <button type="button" onClick={toTop} className="eyebrow group flex items-center gap-2 transition-colors duration-300 hover:text-paper">
+              Back to top
+              <span aria-hidden className="inline-block transition-transform duration-500 ease-expo group-hover:-translate-y-1">
+                ↑
+              </span>
+            </button>
           </div>
         </div>
+      </div>
+
+      {/* Oversized wordmark rising out of the bottom edge. */}
+      <div className="relative mt-14 overflow-hidden px-gutter">
+        <motion.div style={reduced ? undefined : { y: markY, opacity: markOpacity }} className="mx-auto max-w-shell">
+          <Image
+            src="/logo-wordmark.png"
+            alt=""
+            aria-hidden
+            width={1200}
+            height={172}
+            className="theme-invert h-auto w-full"
+            style={{
+              WebkitMaskImage: 'linear-gradient(180deg, #000 10%, rgba(0,0,0,0.08) 100%)',
+              maskImage: 'linear-gradient(180deg, #000 10%, rgba(0,0,0,0.08) 100%)',
+            }}
+          />
+        </motion.div>
       </div>
     </footer>
   );

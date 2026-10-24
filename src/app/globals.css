@@ -4,24 +4,68 @@
 
 @layer base {
   :root {
-    --nav-h: 76px;
+    --nav-h: 84px;
     --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);
+  }
+
+  /*
+   * Theme palettes, as RGB triplets so Tailwind's /opacity modifiers work.
+   * Dark is the default; [data-theme] can also be set on any subtree to pin
+   * it to one theme (the code editor in the bento stays dark in both).
+   */
+  :root,
+  [data-theme='dark'] {
+    --c-void: 5 5 6;
+    --c-carbon: 11 11 13;
+    --c-graphite: 20 20 23;
+    --c-steel: 30 30 34;
+    --c-fg: 255 255 255;
+    --c-inv: 0 0 0;
+    --c-accent-bright: 90 176 255;
+    --a-smoke: 0.58;
+    --a-ash: 0.5;
+    --a-hair: 0.09;
+    --shadow-c: rgba(0, 0, 0, 0.85);
+    --glass: rgba(14, 14, 17, 0.62);
+    --scroll-thumb: #26262b;
+    --grain-opacity: 0.06;
+    color-scheme: dark;
+  }
+
+  [data-theme='light'] {
+    --c-void: 246 246 243;
+    --c-carbon: 255 255 255;
+    --c-graphite: 236 236 232;
+    --c-steel: 224 224 220;
+    --c-fg: 12 12 14;
+    --c-inv: 255 255 255;
+    --c-accent-bright: 0 99 214;
+    --a-smoke: 0.66;
+    --a-ash: 0.6;
+    --a-hair: 0.11;
+    --shadow-c: rgba(20, 30, 60, 0.14);
+    --glass: rgba(255, 255, 255, 0.72);
+    --scroll-thumb: #c9c9c4;
+    --grain-opacity: 0.045;
+    color-scheme: light;
   }
 
   * {
-    @apply border-line;
+    @apply border-hair;
   }
 
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: auto; /* Lenis owns scrolling */
+    background: rgb(var(--c-void));
   }
 
   body {
-    @apply bg-paper font-sans text-ink antialiased;
+    @apply bg-void font-sans text-paper antialiased;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'ss01';
     text-rendering: optimizeLegibility;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   ::selection {
@@ -29,40 +73,39 @@
     color: #fff;
   }
 
-  /* Native scrollbar, restrained. */
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgb(var(--c-void));
   }
   ::-webkit-scrollbar-thumb {
-    background: #d6d6d6;
-    border: 3px solid #fff;
+    background: var(--scroll-thumb);
+    border: 3px solid rgb(var(--c-void));
     border-radius: 999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #b4b4b4;
+    background: rgb(var(--c-fg) / 0.3);
   }
 
   /* Set by <Cursor /> only on fine-pointer, full-motion devices. */
   html.has-custom-cursor,
   html.has-custom-cursor * {
-    cursor: none;
+    cursor: none !important;
   }
   /* Text entry always keeps a real caret. */
   html.has-custom-cursor input,
   html.has-custom-cursor textarea,
   html.has-custom-cursor select,
   html.has-custom-cursor [contenteditable='true'] {
-    cursor: auto;
+    cursor: text !important;
   }
 
   :focus-visible {
     outline: 2px solid #0a84ff;
     outline-offset: 3px;
-    border-radius: 2px;
+    border-radius: 4px;
   }
 
   h1,
@@ -83,66 +126,72 @@
     @apply mx-auto w-full max-w-shell px-gutter;
   }
 
-  /* Uppercase technical label used to index every section. */
+  /* Uppercase technical label — indexes every section. */
   .eyebrow {
-    @apply font-mono text-label uppercase text-muted;
+    @apply font-mono text-label uppercase text-ash;
   }
 
-  /* Editorial rule that sits above section headings. */
-  .hairline {
-    @apply h-px w-full bg-line;
+  /* The italic serif voice used for one or two words per headline. */
+  .accent-serif {
+    @apply font-serif font-normal italic tracking-[-0.02em];
   }
 
   .link-underline {
     background-image: linear-gradient(currentColor, currentColor);
     background-size: 0% 1px;
-    background-position: 0 100%;
+    background-position: 100% 100%;
     background-repeat: no-repeat;
-    transition: background-size 0.5s var(--ease-expo);
+    transition: background-size 0.6s var(--ease-expo);
   }
   .link-underline:hover {
     background-size: 100% 1px;
+    background-position: 0 100%;
+  }
+
+  /* Hairline-bordered dark tile with a cursor-tracked spotlight (see Spotlight). */
+  .tile {
+    @apply relative overflow-hidden rounded-card border border-hair bg-carbon;
   }
 }
 
 @layer utilities {
-  /* Fine film grain over flat white — keeps large empty areas from feeling dead. */
-  .noise::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.035;
-    z-index: 1;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  .grid-lines {
+    background-image: linear-gradient(to right, rgb(var(--c-fg) / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(var(--c-fg) / 0.05) 1px, transparent 1px);
+    background-size: 88px 88px;
   }
 
-  .grid-lines {
+  .grid-lines-light {
     background-image: linear-gradient(to right, #e8e8e8 1px, transparent 1px),
       linear-gradient(to bottom, #e8e8e8 1px, transparent 1px);
-    background-size: 80px 80px;
+    background-size: 88px 88px;
   }
 
   .mask-fade-y {
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
-    mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
   }
 
   .mask-fade-x {
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  }
+
+  .mask-radial {
+    -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent);
+    mask-image: radial-gradient(closest-side, #000 55%, transparent);
   }
 
   .glass {
+    background: var(--glass);
+    backdrop-filter: saturate(170%) blur(18px);
+    -webkit-backdrop-filter: saturate(170%) blur(18px);
+  }
+
+  .glass-light {
     background: rgba(255, 255, 255, 0.72);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-  }
-
-  .glass-dark {
-    background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: saturate(160%) blur(16px);
-    -webkit-backdrop-filter: saturate(160%) blur(16px);
   }
 
   .gpu {
@@ -150,9 +199,76 @@
     will-change: transform;
   }
 
-  .text-stroke {
-    -webkit-text-stroke: 1px #000;
+  .text-outline {
+    -webkit-text-stroke: 1px rgb(var(--c-fg) / 0.55);
     color: transparent;
+  }
+
+  .text-outline-dark {
+    -webkit-text-stroke: 1px rgba(0, 0, 0, 0.6);
+    color: transparent;
+  }
+
+  /* Silver-to-white type, used on the largest headlines only. */
+  .text-chrome {
+    background: linear-gradient(180deg, rgb(var(--c-fg)) 0%, rgb(var(--c-fg)) 45%, rgb(var(--c-fg) / 0.62) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 40px rgba(10, 132, 255, 0.45);
+  }
+
+  .pause-offscreen {
+    content-visibility: auto;
+  }
+
+  /* The logo files are black ink; flip them to white wherever the theme is dark. */
+  [data-theme='dark'] .theme-invert {
+    filter: invert(1);
+  }
+}
+
+/* Film grain — one fixed layer for the whole document. */
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 9000;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1.2s steps(6) infinite;
+}
+
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -3%); }
+  60% { transform: translate(-2%, -1%); }
+  80% { transform: translate(3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+
+/*
+ * Theme switch: the new theme is revealed as a circle growing from the toggle
+ * (View Transitions API). --vt-x / --vt-y / --vt-r are set by ThemeToggle.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  animation: theme-reveal 0.9s cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--vt-x, 50%) var(--vt-y, 0));
+  }
+  to {
+    clip-path: circle(var(--vt-r, 150vmax) at var(--vt-x, 50%) var(--vt-y, 0));
   }
 }
 
@@ -176,5 +292,8 @@ html.lenis body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+  .grain {
+    animation: none;
   }
 }

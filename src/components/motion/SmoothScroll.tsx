@@ -1,70 +1,64 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import Lenis from 'lenis';
 
+const LenisContext = createContext<Lenis | null>(null);
+
+/** The page's Lenis instance, or null under reduced motion / before mount. */
+export function useLenis() {
+  return useContext(LenisContext);
+}
+
 /**
- * Drives the page with Lenis and keeps GSAP ScrollTrigger (used by the
- * horizontal process timeline) on the same RAF loop, so both agree on
- * scroll position to the pixel.
- *
- * Disabled entirely for users who ask for reduced motion.
+ * Drives the page with Lenis. Framer Motion's scroll hooks read native scroll,
+ * which Lenis keeps in sync, so every scroll-linked animation agrees with it.
+ * Disabled entirely for visitors who ask for reduced motion.
  */
 export function SmoothScroll({ children }: { children: ReactNode }) {
+  const [lenis, setLenis] = useState<Lenis | null>(null);
+
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) return;
 
-    const lenis = new Lenis({
-      duration: 1.1,
+    const instance = new Lenis({
+      duration: 1.15,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      lerp: 0.1,
       smoothWheel: true,
-      touchMultiplier: 1.6,
+      touchMultiplier: 1.4,
     });
+    setLenis(instance);
 
     let frame = 0;
-    let detachGsap: (() => void) | undefined;
-
-    // ScrollTrigger is only pulled in on the client, and only if it loads.
-    import('gsap/ScrollTrigger')
-      .then(async ({ ScrollTrigger }) => {
-        const { gsap } = await import('gsap');
-        gsap.registerPlugin(ScrollTrigger);
-        const update = () => ScrollTrigger.update();
-        lenis.on('scroll', update);
-        detachGsap = () => lenis.off('scroll', update);
-      })
-      .catch(() => {
-        /* timeline falls back to CSS scroll-snap */
-      });
 
     const raf = (time: number) => {
-      lenis.raf(time);
+      instance.raf(time);
       frame = requestAnimationFrame(raf);
     };
     frame = requestAnimationFrame(raf);
 
-    // Anchor links need to be handed to Lenis or they jump.
+    // In-page anchors are handed to Lenis so they glide instead of jumping.
     const onClick = (event: MouseEvent) => {
-      const anchor = (event.target as HTMLElement | null)?.closest?.('a[href^="#"]');
+      const anchor = (event.target as HTMLElement | null)?.closest?.('a[href*="#"]');
       if (!anchor) return;
-      const href = anchor.getAttribute('href');
-      if (!href || href === '#') return;
-      const target = document.querySelector(href);
+      const href = anchor.getAttribute('href') ?? '';
+      const [path, hash] = href.split('#');
+      if (!hash || (path && path !== window.location.pathname)) return;
+      const target = document.getElementById(hash);
       if (!target) return;
       event.preventDefault();
-      lenis.scrollTo(target as HTMLElement, { offset: -90, duration: 1.4 });
+      instance.scrollTo(target, { offset: -24, duration: 1.5 });
     };
     document.addEventListener('click', onClick);
 
     return () => {
       document.removeEventListener('click', onClick);
-      detachGsap?.();
       cancelAnimationFrame(frame);
-      lenis.destroy();
+      instance.destroy();
+      setLenis(null);
     };
   }, []);
 
-  return <>{children}</>;
+  return <LenisContext.Provider value={lenis}>{children}</LenisContext.Provider>;
 }

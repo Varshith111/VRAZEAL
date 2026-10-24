@@ -238,12 +238,15 @@ export type Project = {
   highlights?: string[];
   services?: string[];
   status?: string;
+  /** The business behind the product, when it differs from the product name. */
+  clientName?: string;
 };
 
 export const projects: Project[] = [
   {
     id: 'flymeds',
     client: 'FlyMeds',
+    clientName: 'Priyanka Generic Medical Store',
     sector: 'Online pharmacy & healthcare e-commerce',
     year: '2026',
     title: 'A full-stack online pharmacy for affordable healthcare across India.',
@@ -390,5 +393,108 @@ export const faqs = [
   {
     q: 'What happens after launch?',
     a: 'We stay for at least thirty days at no extra cost to monitor performance and fix anything the real world uncovers. After that, ongoing support and iteration sprints are optional.',
+  },
+];
+
+export type ServiceDetail = {
+  id: string;
+  number: string;
+  title: string;
+  headline: string;
+  explain: string;
+  capabilities: string[];
+  outcomes: string[];
+  /** Which drawn product visual illustrates the service. */
+  visual: 'websites' | 'crm' | 'software' | 'ai' | 'brand' | 'creative';
+  cta?: { label: string; href: string };
+};
+
+/** The five services as offered on the Services page (anchors match the footer links). */
+export const serviceDetails: ServiceDetail[] = [
+  {
+    id: 'web',
+    number: '01',
+    title: 'Website Development',
+    headline: 'Digital experiences that work as hard as your business.',
+    explain:
+      'We design and develop fast, responsive websites and digital experiences that combine strong visual design with performance, usability and business goals.',
+    capabilities: [
+      'Corporate websites',
+      'E-commerce & retail platforms',
+      'Landing pages & campaigns',
+      'Web applications',
+      'Custom digital experiences',
+    ],
+    outcomes: ['Green Core Web Vitals', 'Higher conversion', 'Fully responsive'],
+    visual: 'websites',
+  },
+  {
+    id: 'crm',
+    number: '02',
+    title: 'Custom CRM & Software',
+    headline: 'Software built around the way you work.',
+    explain:
+      'We build custom CRMs, dashboards, internal tools and business platforms designed around your actual workflows — not the other way round.',
+    capabilities: [
+      'Custom CRM systems',
+      'Admin dashboards & portals',
+      'Business management systems',
+      'Internal automation tools',
+      'Workflow platforms',
+    ],
+    outcomes: ['Streamlined process', 'Data visibility', 'No per-seat fees'],
+    visual: 'crm',
+  },
+  {
+    id: 'ai',
+    number: '03',
+    title: 'AI Solutions & Automation',
+    headline: 'Turn repetitive work into intelligent systems.',
+    explain:
+      'We integrate AI and automation into business workflows to reduce manual work, improve efficiency and unlock new possibilities — with evaluation and human review built in.',
+    capabilities: [
+      'AI support & chat agents',
+      'Workflow automation pipelines',
+      'Custom AI integrations',
+      'Document & text processing',
+      'Business process automation',
+    ],
+    outcomes: ['Faster response times', 'Fewer manual errors', 'Measurable ROI'],
+    visual: 'ai',
+    cta: { label: 'Explore AI solutions', href: '/ai-solutions' },
+  },
+  {
+    id: 'branding',
+    number: '04',
+    title: 'Branding & Graphic Design',
+    headline: 'Make your business recognisable.',
+    explain:
+      'We create visual identities and creative systems that give businesses a consistent, distinctive presence — from the logo to the last social post.',
+    capabilities: [
+      'Brand identity systems',
+      'Logo & mark systems',
+      'Social media design',
+      'Marketing creatives',
+      'Visual guidelines & tokens',
+    ],
+    outcomes: ['Coherent presence', 'Instant credibility', 'Reusable asset library'],
+    visual: 'brand',
+  },
+  {
+    id: 'marketing',
+    number: '05',
+    title: 'Digital Marketing',
+    headline: 'Turn attention into growth.',
+    explain:
+      'We help businesses build a stronger digital presence through strategic content, campaigns and growth-focused digital systems.',
+    capabilities: [
+      'Social media strategy',
+      'Content strategy & production',
+      'Digital campaigns',
+      'Performance marketing',
+      'Creative content production',
+    ],
+    outcomes: ['Qualified leads', 'Higher engagement', 'Sustainable channel growth'],
+    visual: 'creative',
   },
 ];
