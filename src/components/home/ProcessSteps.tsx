@@ -1,7 +1,16 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import {
+  AnimatePresence,
+  motion,
+  useInView,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  type PanInfo,
+} from 'framer-motion';
 import { Reveal } from '@/components/motion/Reveal';
 import { SectionIntro } from '@/components/ui/SectionIntro';
 import { processSteps } from '@/lib/content';
@@ -40,7 +49,7 @@ export function ProcessSteps() {
           aside="Six phases, each with a defined output, a named owner and a date. You see a live build every single week."
         />
       </div>
-      {isDesktop && !reduced ? <Pinned /> : <Stacked />}
+      {reduced ? <Stacked /> : isDesktop ? <Pinned /> : <MobileStepper />}
     </section>
   );
 }
@@ -190,6 +199,164 @@ function Pinned() {
   );
 }
 
+const CYCLE = 5000;
+
+/**
+ * Touch layout: the six phases as a story-style deck one screen tall instead
+ * of six long rows. Segmented bars across the top fill as each phase plays;
+ * it advances on its own while in view, and swiping, tapping a segment or the
+ * arrows takes over (auto-play stops the moment the reader steers).
+ */
+function MobileStepper() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { margin: '-25% 0px -25% 0px' });
+  const [[step, direction], setStep] = useState<[number, number]>([0, 1]);
+  const [auto, setAuto] = useState(true);
+  const playing = auto && inView;
+  const total = processSteps.length;
+  const current = processSteps[step];
+  const [gx, gy] = GLOW[step];
+
+  const go = (next: number, manual = true) => {
+    const target = (next + total) % total;
+    const forward = target > step || (step === total - 1 && target === 0);
+    setStep([target, forward ? 1 : -1]);
+    if (manual) setAuto(false);
+  };
+
+  useEffect(() => {
+    if (!playing) return;
+    const id = window.setTimeout(() => {
+      setStep(([value]) => [(value + 1) % total, 1]);
+    }, CYCLE);
+    return () => window.clearTimeout(id);
+  }, [playing, step, total]);
+
+  const onDragEnd = (_: unknown, info: PanInfo) => {
+    if (info.offset.x < -50 || info.velocity.x < -400) go(step + 1);
+    else if (info.offset.x > 50 || info.velocity.x > 400) go(step - 1);
+  };
+
+  return (
+    <div ref={ref} className="shell mt-12">
+      {/* Story segments — also a tappable index. */}
+      <div className="flex gap-1.5" role="tablist" aria-label="Process phases">
+        {processSteps.map((item, index) => (
+          <button
+            key={item.id}
+            type="button"
+            role="tab"
+            aria-selected={index === step}
+            aria-label={`${item.number} ${item.title}`}
+            onClick={() => go(index)}
+            className="flex-1 py-3"
+          >
+            <span className="relative block h-[3px] overflow-hidden rounded-full bg-paper/15">
+              <motion.span
+                key={`${index}-${step}-${playing}`}
+                className="absolute inset-0 origin-left rounded-full bg-accent shadow-[0_0_8px_#0A84FF]"
+                initial={{ scaleX: index < step ? 1 : 0 }}
+                animate={{ scaleX: index <= step ? 1 : 0 }}
+                transition={{
+                  duration: index === step && playing ? CYCLE / 1000 : 0.4,
+                  ease: index === step && playing ? 'linear' : EASE,
+                }}
+              />
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <div className="relative mt-4 overflow-hidden rounded-[24px] border border-hair bg-carbon">
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{ background: 'radial-gradient(closest-side, rgba(10,132,255,0.24), transparent)' }}
+          animate={{ left: `${gx}%`, top: `${gy}%` }}
+          transition={{ duration: 1.4, ease: EASE }}
+        />
+
+        <motion.div
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.18}
+          onDragEnd={onDragEnd}
+          className="relative min-h-[27rem] touch-pan-y p-6 sm:min-h-[24rem] sm:p-8"
+        >
+          <AnimatePresence mode="wait" custom={direction} initial={false}>
+            <motion.div
+              key={current.id}
+              custom={direction}
+              variants={{
+                enter: (d: number) => ({ opacity: 0, x: d * 48, filter: 'blur(6px)' }),
+                center: { opacity: 1, x: 0, filter: 'blur(0px)' },
+                exit: (d: number) => ({ opacity: 0, x: d * -48, filter: 'blur(6px)' }),
+              }}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.5, ease: EASE }}
+            >
+              <div className="flex items-start justify-between">
+                <span className="font-display text-[5.5rem] font-medium leading-[0.8] tracking-[-0.07em] text-outline">
+                  {current.number}
+                </span>
+                <span className="rounded-pill border border-accent/40 bg-accent/10 px-3 py-1.5 font-mono text-[0.625rem] uppercase tracking-[0.12em] text-accent-bright">
+                  {current.duration}
+                </span>
+              </div>
+              <h3 className="mt-8 font-display text-[2.5rem] font-medium leading-none tracking-[-0.05em]">
+                {current.title}
+              </h3>
+              <p className="mt-4 text-[1rem] leading-[1.6] text-smoke">{current.body}</p>
+              <ul className="mt-6 flex flex-wrap gap-1.5">
+                {current.outputs.map((output, index) => (
+                  <motion.li
+                    key={output}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, delay: 0.15 + index * 0.06, ease: EASE }}
+                    className="flex items-center gap-2 rounded-pill border border-paper/10 bg-paper/[0.03] px-3 py-1.5 text-[0.8125rem]"
+                  >
+                    <span className="h-1 w-1 rounded-full bg-accent" />
+                    {output}
+                  </motion.li>
+                ))}
+              </ul>
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
+
+        <div className="relative flex items-center justify-between border-t border-hair px-6 py-3 sm:px-8">
+          <span className="font-mono text-label text-ash">
+            {current.number} <span className="text-paper/30">/ 0{total}</span>
+          </span>
+          <span className="font-mono text-[0.625rem] uppercase tracking-[0.14em] text-ash">Swipe</span>
+          <div className="flex gap-2">
+            {[
+              { label: 'Previous phase', delta: -1, d: 'M13.5 8h-11M7 3.5 2.5 8 7 12.5' },
+              { label: 'Next phase', delta: 1, d: 'M2.5 8h11M9 3.5 13.5 8 9 12.5' },
+            ].map((button) => (
+              <button
+                key={button.label}
+                type="button"
+                aria-label={button.label}
+                onClick={() => go(step + button.delta)}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-paper/15 transition-colors duration-300 active:border-accent active:bg-accent active:text-white"
+              >
+                <svg viewBox="0 0 16 16" className="h-4 w-4" aria-hidden>
+                  <path d={button.d} stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Reduced motion: every phase at once, no autoplay. */
 function Stacked() {
   return (
     <div className="shell mt-14">

@@ -7,6 +7,7 @@ import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } f
 import { Button } from '@/components/ui/Button';
 import { SectionIntro } from '@/components/ui/SectionIntro';
 import { projects } from '@/lib/content';
+import { useMediaQuery } from '@/lib/useMediaQuery';
 import { ScreensRail } from './ScreensRail';
 
 const project = projects[0];
@@ -42,11 +43,19 @@ export function FeaturedWork() {
 }
 
 function ZoomReveal() {
-  const ref = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
 
   if (reduced) return <StaticFeature />;
+  // A three-screen pinned sequence is too long on a phone: touch gets the
+  // same idea compressed into a single, unpinned scroll-in.
+  if (!isDesktop) return <CompactReveal />;
+  return <PinnedReveal />;
+}
+
+function PinnedReveal() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
 
   return (
     <div ref={ref} className="relative mt-16 h-[280vh] lg:mt-24">
@@ -163,6 +172,69 @@ function Facts() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Touch version of the reveal. As the frame scrolls in, "Fly" and "meds"
+ * slide together from opposite edges while the window of the live site opens
+ * from a slot and its image settles from a slight zoom. No pinning.
+ */
+function CompactReveal() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 95%', 'center 55%'] });
+  const inset = useTransform(scrollYProgress, [0, 1], [18, 0]);
+  const clipPath = useTransform(inset, (v) => `inset(${v}% ${v * 0.6}% ${v}% ${v * 0.6}% round 20px)`);
+  const scale = useTransform(scrollYProgress, [0, 1], [1.3, 1]);
+  const left = useTransform(scrollYProgress, [0, 0.85], ['-45%', '0%']);
+  const right = useTransform(scrollYProgress, [0, 0.85], ['45%', '0%']);
+  const nameOpacity = useTransform(scrollYProgress, [0, 0.6], [0, 1]);
+  const screen = project.screens?.[0];
+
+  return (
+    <div ref={ref} className="mt-14">
+      <motion.div
+        aria-hidden
+        className="flex items-baseline justify-center gap-[0.18em] overflow-hidden px-gutter font-display text-[clamp(3.5rem,19vw,7rem)] font-medium leading-[0.9] tracking-[-0.055em]"
+        style={{ opacity: nameOpacity }}
+      >
+        <motion.span style={{ x: left }}>Fly</motion.span>
+        <motion.span className="accent-serif" style={{ x: right }}>
+          meds
+        </motion.span>
+      </motion.div>
+
+      <div className="mt-6 px-gutter">
+        <motion.div
+          className="relative aspect-[16/11] overflow-hidden rounded-[20px] border border-paper/10 bg-white shadow-[0_30px_80px_-40px_rgba(10,132,255,0.55)]"
+          style={{ clipPath }}
+        >
+          <motion.div className="absolute inset-0" style={{ scale }}>
+            <Image
+              src={screen?.src ?? '/work/flymeds/home.webp'}
+              alt={screen?.alt ?? project.client}
+              fill
+              sizes="100vw"
+              className="object-cover object-top"
+            />
+          </motion.div>
+          <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-pill bg-black/70 px-2.5 py-1 font-mono text-[0.625rem] uppercase tracking-[0.1em] text-white backdrop-blur-md">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_6px_#0A84FF]" />
+            {project.status ?? 'Live'} · {project.url?.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+          </span>
+        </motion.div>
+      </div>
+
+      <motion.div
+        className="mt-10"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-10%' }}
+        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <Facts />
+      </motion.div>
     </div>
   );
 }

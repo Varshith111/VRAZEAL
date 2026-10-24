@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
 import type { Project, ProjectScreen } from '@/lib/content';
 import { useMediaQuery } from '@/lib/useMediaQuery';
@@ -143,17 +143,105 @@ function PinnedRail({ items, total, title }: { items: Item[]; total: number; tit
   );
 }
 
+/**
+ * Touch carousel. Cards snap to the centre; the one in focus sits at full
+ * size while its neighbours recede, and a counter plus tappable dots track
+ * the position. Cards slide in staggered the first time the rail appears.
+ */
 function SwipeRail({ items }: { items: Item[] }) {
+  const scroller = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const node = scroller.current;
+    if (!node) return;
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      const centre = node.scrollLeft + node.clientWidth / 2;
+      let best = 0;
+      let distance = Infinity;
+      Array.from(node.children).forEach((child, index) => {
+        const el = child as HTMLElement;
+        const d = Math.abs(el.offsetLeft + el.offsetWidth / 2 - centre);
+        if (d < distance) {
+          distance = d;
+          best = index;
+        }
+      });
+      setActive(best);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(measure);
+    };
+    node.addEventListener('scroll', onScroll, { passive: true });
+    measure();
+    return () => {
+      node.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  const goTo = (index: number) => {
+    const node = scroller.current;
+    const child = node?.children[index] as HTMLElement | undefined;
+    if (!node || !child) return;
+    node.scrollTo({ left: child.offsetLeft - (node.clientWidth - child.offsetWidth) / 2, behavior: 'smooth' });
+  };
+
   return (
     <div className="mt-16">
-      <div className="shell mb-6">
+      <div className="shell mb-6 flex items-end justify-between">
         <p className="eyebrow">Inside the build — swipe</p>
+        <p className="font-display text-[1.375rem] font-medium leading-none tracking-[-0.04em] tabular-nums">
+          {String(active + 1).padStart(2, '0')}
+          <span className="text-ash"> / {String(items.length).padStart(2, '0')}</span>
+        </p>
       </div>
-      <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-gutter pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {items.map((item) => (
-          <div key={item.key} className="snap-start">
-            {renderItem(item, true)}
-          </div>
+
+      <div
+        ref={scroller}
+        className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-gutter pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {items.map((item, index) => (
+          <motion.div
+            key={item.key}
+            className="snap-center"
+            initial={{ opacity: 0, x: 60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '0px -5% 0px 0px' }}
+            transition={{ duration: 0.8, delay: Math.min(index, 3) * 0.08, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div
+              className={cn(
+                'origin-center transition-[transform,opacity,filter] duration-500 ease-expo',
+                index === active ? 'scale-100 opacity-100' : 'scale-[0.93] opacity-50 saturate-50',
+              )}
+            >
+              {renderItem(item, true)}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="shell mt-2 flex items-center justify-center gap-1.5" role="tablist" aria-label="Screens">
+        {items.map((item, index) => (
+          <button
+            key={item.key}
+            type="button"
+            role="tab"
+            aria-selected={index === active}
+            aria-label={`Show item ${index + 1}`}
+            onClick={() => goTo(index)}
+            className="flex h-8 items-center px-0.5"
+          >
+            <span
+              className={cn(
+                'block h-1.5 rounded-full transition-all duration-500 ease-expo',
+                index === active ? 'w-6 bg-accent shadow-[0_0_8px_#0A84FF]' : 'w-1.5 bg-paper/25',
+              )}
+            />
+          </button>
         ))}
       </div>
     </div>
